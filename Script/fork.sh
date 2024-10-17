@@ -53,10 +53,10 @@ curl -L -o Tools-repo/Ruleset/mihomo/geosite/Netflix.mrs "https://raw.githubuser
 curl -L -o Tools-repo/Ruleset/mihomo/geosite/Spotify.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"
 
 # geoip
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/LocalIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/ChinaIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/NetflixIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/TwitterIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/telegramIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/FacebookIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs"
-curl -L -o Tools-repo/Ruleset/mihomo/geoip/GoogleIP.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/Local.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/China.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/Netflix.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/Twitter.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/telegram.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/Facebook.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/facebook.mrs"
+curl -L -o Tools-repo/Ruleset/mihomo/geoip/Google.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
