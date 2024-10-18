@@ -99,7 +99,7 @@ proxy-groups:
   # 策略分组
   - name: 默认选择
     type: select
-    proxies: [自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+    proxies: [自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
   - name: 海外加速
     <<: *pg
   - name: 海外媒体
@@ -116,16 +116,13 @@ proxy-groups:
     <<: *pg
   - name: 游戏平台
     type: select
-    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+    proxies: [国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
   - name: 苹果服务
     type: select
-    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
-  - name: 国内直连
-    type: select
-    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+    proxies: [国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
   - name: 兜底规则
     type: select
-    proxies: [自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+    proxies: [自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
   # 地区分组
   - name: 香港
     type: select
