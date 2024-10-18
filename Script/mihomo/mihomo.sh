@@ -378,7 +378,7 @@ Configure() {
     # 检测安装状态
     Check_install
     # 配置文件 URL
-    CONFIG_URL1="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Config/mihomo.yaml"
+    CONFIG_URL="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Config/mihomo.yaml"
     # 下载配置文件
     curl -s -o "$CONFIG_FILE" "$CONFIG_URL"
     # 获取用户输入的机场数量，默认为 1，且限制为 5 个以内
@@ -392,8 +392,6 @@ Configure() {
             echo -e "${Red}无效的数量，请输入 1 到 5 之间的正整数。${Reset}"
         fi
     done
-    # 读取配置文件
-    echo -e "${Green}读取配置文件${Reset}"
     # 初始化 proxy-providers 部分
     proxy_providers="proxy-providers:"
     # 动态添加机场
@@ -409,10 +407,6 @@ Configure() {
     override:
       additional-prefix: \"[$airport_name]\""
     done
-    # 修改配置文件
-    echo -e "${Green}正在修改配置文件${Reset}"
-    # 写入配置文件
-    echo -e "${Green}开始写入配置文件${Reset}"
     # 使用 awk 将 proxy-providers 插入到指定位置
     awk -v providers="$proxy_providers" '
     /^# 机场配置/ {
@@ -422,25 +416,24 @@ Configure() {
     }
     { print }
     ' "$CONFIG_FILE" > temp.yaml && mv temp.yaml "$CONFIG_FILE"
-    # 验证修改后的配置文件格式
-    echo -e "${Green}验证修改后的配置文件格式${Reset}"
     # 提示保存位置
-    echo -e "${Green}mihomo 配置已完成并保存到 ${CONFIG_FILE} 文件夹${Reset}"
-    echo -e "${Green}mihomo 配置完成，正在启动中${Reset}"
+    echo -e "mihomo 配置已完成并保存到 ${CONFIG_FILE} 文件夹"
     # 重新加载 systemd
     systemctl daemon-reload
-    # 立即启动 mihomo 服务
     systemctl start mihomo
-    # # 检查 mihomo 服务状态
-    # systemctl status mihomo
-    # 设置开机启动
     systemctl enable mihomo
     echo -e "${Green}已设置开机自启动${Reset}"
     # 调用函数获取
     GetLocal_ip
     # 引导语
+    echo -e ""
     echo -e "恭喜你，你的 mihomo 已经配置完成"
-    echo -e "使用 ${Green}http://$ipv4:9090/ui${Reset} 访问你的 mihomo 管理面板面板"
+    echo -e "${Magenta}=========================${Reset}"
+    echo -e "mihomo 管理面板地址"
+    echo -e "${Green}http://$ipv4:9090/ui ${Reset}"
+    echo -e "${White}-------------------------${Reset}"
+    echo -e "${Yellow}mihomo          进入菜单 ${Reset}"
+    echo -e "${Cyan}=========================${Reset}"
     # 返回主菜单
     Start_Main
 }
