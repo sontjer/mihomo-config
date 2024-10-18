@@ -88,7 +88,7 @@ proxies:
     udp: true
     
 # 策略组相关
-pg: &pg {type: select, proxies: [默认选择,自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]}
+pg: &pg {type: select, proxies: [默认选择,自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]}
 # 手动选择策略
 mt: &mt {type: select, include-all: true}
 # 自动优选策略
