@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#!name = mihomo 一键脚本
+#!name = mihomo 一键管理脚本
 #!desc = 支持，安装、更新、卸载、修改配置等
 #!date = 2024-10-18 16:15
 #!author = Abcd789JK ChatGPT
