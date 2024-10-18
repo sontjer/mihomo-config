@@ -1,8 +1,9 @@
+
 #!name = mihomo TProxy 配置文件
 #!desc = 说明：理论上适用于所有的 Meta 内核，使用最新的 mrs 规则
-#!date = 2024-10-07 16:05
+#!date = 2024-10-18 17:35
 #!source = https://wiki.metacubex.one/example/conf/#__tabbed_1_2
-#!author = Abcd789JK
+#!author = GPT
 
 # 这里是机场订阅更新和延迟测试相关锚点
 pr: &pr {type: http, interval: 3600, health-check: {enable: true, url: "https://www.gstatic.com/generate_204", interval: 300}}
@@ -16,8 +17,6 @@ ipv6: true
 allow-lan: true
 # 混合端口 HTTP 和 SOCKS5 用一个端口
 mixed-port: 7890
-# Tproxy 端口
-tproxy-port: 7891
 # 更换延迟计算方式,去除握手等额外延迟
 unified-delay: true
 # TCP 并发连接所有 IP, 将使用最快握手的 TCP
@@ -58,10 +57,16 @@ sniffer:
     - "Mijia Cloud"
     - "+.push.apple.com"
 
-# 自动配置 iptables
-iptables: 
+# TUN 配置
+tun:
   enable: true
-  inbound-interface: eth0
+  stack: mixed
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
   
 # DNS配置
 dns:
@@ -112,31 +117,22 @@ pg: &pg {type: select, proxies: [手动选择, 自动选择, 全部节点, 香�
 mt: &mt {type: select, include-all: true}
 # 自动优选策略
 at: &at {type: url-test, include-all: true, interval: 6, tolerance: 20, lazy: true, url: "https://www.gstatic.com/generate_204"}
-# 负载均衡策略
-lb: &lb {type: load-balance, include-all: true, interval: 6, lazy: true, strategy: consistent-hashing, url: "https://www.gstatic.com/generate_204"}
 
 # 策略组
 proxy-groups:
   # 策略分组
   - {name: 手动选择, type: select, proxies: [自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: YouTube, <<: *pg}
-  - {name: Google, <<: *pg}
-  - {name: Microsoft, <<: *pg}
-  - {name: TikTok, <<: *pg}
-  - {name: Netflix, <<: *pg}
-  - {name: Disney, <<: *pg}
-  - {name: Spotify, <<: *pg}
-  - {name: Telegram, <<: *pg}
+  - {name: 海外加速, <<: *pg}
+  - {name: 海外媒体, <<: *pg}
+  - {name: 油管视频, <<: *pg}
+  - {name: 微软平台, <<: *pg}
+  - {name: 电报信息, <<: *pg}
   - {name: ChatGPT, <<: *pg}
-  - {name: PayPal, <<: *pg}
-  - {name: Twitter, <<: *pg}
-  - {name: Facebook, <<: *pg}
-  - {name: Game, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: Global, <<: *pg}
-  - {name: Apple, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: Bilibili, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: China, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: 兜底规则, type: select, proxies: [手动选择, 自动选择, 国内直连, 全部节点]}
+  - {name: 海外社交, <<: *pg}
+  - {name: 游戏平台, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
+  - {name: 苹果平台, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
+  - {name: 国内加速, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
+  - {name: 兜底规则, type: select, proxies: [手动选择, 国内直连, 全部节点]}
   # 地区分组
   - {name: 香港节点, <<: *at, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
   - {name: 台湾节点, <<: *at, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$" }
@@ -150,36 +146,36 @@ proxy-groups:
 # 规则策略
 rules:
   # 域名规则
-  - RULE-SET,Local_ip,China,no-resolve
+  - RULE-SET,Local_ip,国内加速,no-resolve
   - RULE-SET,OpenAI,ChatGPT
-  - RULE-SET,YouTube,YouTube
-  - RULE-SET,Google,Google
-  - RULE-SET,GitHub,Microsoft
-  - RULE-SET,OneDrive,Microsoft
-  - RULE-SET,Microsoft,Microsoft
-  - RULE-SET,Epic,Game
-  - RULE-SET,Steam,Game
-  - RULE-SET,PayPal,PayPal
-  - RULE-SET,Spotify,Spotify
-  - RULE-SET,Twitter,Twitter 
-  - RULE-SET,Telegram,Telegram
-  - RULE-SET,Instagram,Facebook
-  - RULE-SET,Facebook,Facebook
-  - RULE-SET,TikTok,TikTok
-  - RULE-SET,Disney,Disney
-  - RULE-SET,Netflix,Netflix
-  - RULE-SET,Apple,Apple
-  - RULE-SET,Bilibili,Bilibili
-  - RULE-SET,China,China
-  - RULE-SET,GlobalGFW,Global
+  - RULE-SET,YouTube,油管视频
+  - RULE-SET,Google,油管视频
+  - RULE-SET,GitHub,微软平台
+  - RULE-SET,OneDrive,微软平台
+  - RULE-SET,Microsoft,微软平台
+  - RULE-SET,Epic,游戏平台
+  - RULE-SET,Steam,游戏平台
+  - RULE-SET,PayPal,海外社交
+  - RULE-SET,Spotify,海外社交
+  - RULE-SET,Twitter,海外社交 
+  - RULE-SET,Telegram,电报信息
+  - RULE-SET,Instagram,海外社交
+  - RULE-SET,Facebook,海外社交
+  - RULE-SET,TikTok,海外媒体
+  - RULE-SET,Disney,海外媒体
+  - RULE-SET,Netflix,海外媒体
+  - RULE-SET,Apple,苹果平台
+  - RULE-SET,Bilibili,国内加速
+  - RULE-SET,China,国内加速
+  - RULE-SET,GlobalGFW,海外加速
   # ipcidr
-  - RULE-SET,Google_ip,Google
-  - RULE-SET,Twitter_ip,Twitter
-  - RULE-SET,Telegram_ip,Telegram
-  - RULE-SET,Facebook_ip,Facebook
-  - RULE-SET,Netflix_ip,Netflix
-  - RULE-SET,China_ip,China
-  - MATCH,Global
+  - RULE-SET,Google_ip,油管视频
+  - RULE-SET,Twitter_ip,海外社交
+  - RULE-SET,Telegram_ip,电报信息
+  - RULE-SET,Facebook_ip,海外社交
+  - RULE-SET,Netflix_ip,海外媒体
+  - RULE-SET,China_ip,国内加速
+  - MATCH,兜底规则
 
 ######### 规则锚点 #######
 rule-anchor:
