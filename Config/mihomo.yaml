@@ -1,9 +1,9 @@
 
-#!name = mihomo TProxy 配置文件
+#!name = mihomo TUN 配置文件
 #!desc = 说明：理论上适用于所有的 Meta 内核，使用最新的 mrs 规则
-#!date = 2024-10-18 17:35
+#!date = 2024-10-18 19:30
 #!source = https://wiki.metacubex.one/example/conf/#__tabbed_1_2
-#!author = GPT
+#!author = Abcd789JK
 
 # 这里是机场订阅更新和延迟测试相关锚点
 pr: &pr {type: http, interval: 3600, health-check: {enable: true, url: "https://www.gstatic.com/generate_204", interval: 300}}
@@ -11,35 +11,23 @@ pr: &pr {type: http, interval: 3600, health-check: {enable: true, url: "https://
 # 机场配置
 
 # 全局配置
-# 开启 ip 总开关 true/false
 ipv6: true
-# 允许局域网的连接（可用来共享加速）
 allow-lan: true
-# 混合端口 HTTP 和 SOCKS5 用一个端口
 mixed-port: 7890
-# 更换延迟计算方式,去除握手等额外延迟
 unified-delay: true
-# TCP 并发连接所有 IP, 将使用最快握手的 TCP
 tcp-concurrent: true
 
 # 配置 WEB UI
-# UI 名字
 external-ui: ui
-# UI 地址
 external-controller: 0.0.0.0:9090
-# 自定义 UI 下载地址
 external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
 
-# 匹配所有进程
 find-process-mode: strict
-# 全局 TLS 指纹
 global-client-fingerprint: chrome
 
 # profile 应为扩展配置，但在 mihomo, 仅作为缓存项使用
 profile:
-  # 储存 API 对策略组的选择，以供下次启动时使用
   store-selected: true
-  # 储存 fakeip 映射表，域名再次发生连接时，使用原有映射地址
   store-fake-ip: true
 
 # 嗅探域名 可选配置
@@ -67,41 +55,29 @@ tun:
   auto-route: true
   auto-redirect: true
   auto-detect-interface: true
-  
-# DNS配置
+
+# DNS 配置
 dns:
-  # 关闭将使用系统 DNS
   enable: true
-  # 是否解析 IPV6, 如为 false, 则回应 AAAA 的空解析
   ipv6: true
-  # 开启 DNS 服务器监听，仅支持 udp
-  listen: 0.0.0.0:53
-  # fakeip 下的 IP 段设置
-  fake-ip-range: 28.0.0.1/8
-  # DNS 连接遵守路由规则，需配置 proxy-server-nameserver
   respect-rules: true
-  # 模式：redir-host 或 fake-ip
   enhanced-mode: fake-ip
-  # fake ip 白名单列表，以下地址不会下发fakeip映射用于连接
   fake-ip-filter:
     - "*"
     - "+.lan"
     - "+.local"
     - "+.market.xiaomi.com"
-  # 默认的域名解析服务器
   nameserver:
-    - https://223.5.5.5/dns-query
     - https://120.53.53.53/dns-query
-  # 代理节点域名解析服务器，仅用于解析代理节点的域名
+    - https://223.5.5.5/dns-query
   proxy-server-nameserver:
-    - https://223.5.5.5/dns-query
     - https://120.53.53.53/dns-query
-  # 指定域名查询的解析服务器
+    - https://223.5.5.5/dns-query
   nameserver-policy:
-    "rule-set:China,Bilibili":
-      - https://223.5.5.5/dns-query
+    "rule-set:cn_domain,private_domain":
       - https://120.53.53.53/dns-query
-    "rule-set:GlobalGFW":
+      - https://223.5.5.5/dns-query
+    "rule-set:geolocation-!cn":
       - "https://dns.cloudflare.com/dns-query"
       - "https://dns.google/dns-query"
 
@@ -112,7 +88,7 @@ proxies:
     udp: true
     
 # 策略组相关
-pg: &pg {type: select, proxies: [手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
+pg: &pg {type: select, proxies: [默认选择,自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]}
 # 手动选择策略
 mt: &mt {type: select, include-all: true}
 # 自动优选策略
@@ -121,60 +97,100 @@ at: &at {type: url-test, include-all: true, interval: 6, tolerance: 20, lazy: tr
 # 策略组
 proxy-groups:
   # 策略分组
-  - {name: 手动选择, type: select, proxies: [自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: 海外加速, <<: *pg}
-  - {name: 海外媒体, <<: *pg}
-  - {name: 油管视频, <<: *pg}
-  - {name: 微软平台, <<: *pg}
-  - {name: 电报信息, <<: *pg}
-  - {name: ChatGPT, <<: *pg}
-  - {name: 海外社交, <<: *pg}
-  - {name: 游戏平台, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: 苹果平台, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: 国内加速, type: select, proxies: [国内直连, 手动选择, 自动选择, 全部节点, 香港节点, 台湾节点, 美国节点, 狮城节点, 日本节点, 韩国节点]}
-  - {name: 兜底规则, type: select, proxies: [手动选择, 国内直连, 全部节点]}
+  - name: 默认选择
+    type: select
+    proxies: [自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 海外加速
+    <<: *pg
+  - name: 海外媒体
+    <<: *pg
+  - name: 谷歌服务
+    <<: *pg
+  - name: 微软服务
+    <<: *pg
+  - name: 电报信息
+    <<: *pg
+  - name: 社交平台
+    <<: *pg
+  - name: OpenAI
+    <<: *pg
+  - name: 游戏平台
+    type: select
+    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 苹果服务
+    type: select
+    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 国内直连
+    type: select
+    proxies: [直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 兜底规则
+    type: select
+    proxies: [自动选择,直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
   # 地区分组
-  - {name: 香港节点, <<: *at, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: 台湾节点, <<: *at, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$" }
-  - {name: 美国节点, <<: *at, filter: "(?=.*(美|US|(?i)States|America))^((?!(港|台|日|韩|新)).)*$"}
-  - {name: 狮城节点, <<: *at, filter: "(?=.*(新|狮|獅|SG|(?i)Singapore))^((?!(港|台|日|韩|美|西)).)*$"}
-  - {name: 日本节点, <<: *at, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$" }
-  - {name: 韩国节点, <<: *at, filter: "(?=.*(韩|KR|(?i)Korea))^((?!(台|日|港|新|美)).)*$"}
-  - {name: 全部节点, <<: *mt}
-  - {name: 自动选择, <<: *at}
+  - name: 香港
+    type: select
+    include-all: true
+    filter: "(?i)港|hk|hongkong|hong kong"
+  - name: 台湾
+    type: select
+    include-all: true
+    filter: "(?i)台|tw|taiwan"
+  - name: 日本
+    type: select
+    include-all: true
+    filter: "(?i)日|jp|japan"
+  - name: 美国
+    type: select
+    include-all: true
+    filter: "(?i)美|us|unitedstates|united states"
+  - name: 狮城
+    type: select
+    include-all: true
+    filter: "(?i)(新|sg|singapore)"
+  - name: 其它地区
+    type: select
+    include-all: true
+    filter: "(?i)^(?!.*(?:🇭🇰|🇯🇵|🇺🇸|🇸🇬|🇨🇳|港|hk|hongkong|台|tw|taiwan|日|jp|japan|新|sg|singapore|美|us|unitedstates)).*"
+  - name: 全部节点
+    type: select
+    include-all: true
+  - name: 自动选择
+    type: url-test
+    include-all: true
+    tolerance: 10
 
 # 规则策略
 rules:
   # 域名规则
-  - RULE-SET,Local_ip,国内加速,no-resolve
-  - RULE-SET,OpenAI,ChatGPT
-  - RULE-SET,YouTube,油管视频
-  - RULE-SET,Google,油管视频
-  - RULE-SET,GitHub,微软平台
-  - RULE-SET,OneDrive,微软平台
-  - RULE-SET,Microsoft,微软平台
+  - RULE-SET,Local_ip,国内直连,no-resolve
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,YouTube,谷歌服务
+  - RULE-SET,Google,谷歌服务
+  - RULE-SET,GitHub,微软服务
+  - RULE-SET,OneDrive,微软服务
+  - RULE-SET,Microsoft,微软服务
   - RULE-SET,Epic,游戏平台
   - RULE-SET,Steam,游戏平台
-  - RULE-SET,PayPal,海外社交
-  - RULE-SET,Spotify,海外社交
-  - RULE-SET,Twitter,海外社交 
   - RULE-SET,Telegram,电报信息
-  - RULE-SET,Instagram,海外社交
-  - RULE-SET,Facebook,海外社交
+  - RULE-SET,PayPal,社交平台
+  - RULE-SET,Spotify,社交平台
+  - RULE-SET,Twitter,社交平台 
+  - RULE-SET,Instagram,社交平台
+  - RULE-SET,Facebook,社交平台
   - RULE-SET,TikTok,海外媒体
   - RULE-SET,Disney,海外媒体
   - RULE-SET,Netflix,海外媒体
   - RULE-SET,Apple,苹果平台
-  - RULE-SET,Bilibili,国内加速
-  - RULE-SET,China,国内加速
+  - RULE-SET,Bilibili,国内直连
+  - RULE-SET,China,国内直连
   - RULE-SET,GlobalGFW,海外加速
   # ipcidr
-  - RULE-SET,Google_ip,油管视频
-  - RULE-SET,Twitter_ip,海外社交
+  - RULE-SET,Google_ip,谷歌服务
   - RULE-SET,Telegram_ip,电报信息
-  - RULE-SET,Facebook_ip,海外社交
+  - RULE-SET,Twitter_ip,社交平台
+  - RULE-SET,Facebook_ip,社交平台
   - RULE-SET,Netflix_ip,海外媒体
-  - RULE-SET,China_ip,国内加速
+  - RULE-SET,China_ip,国内直连
   - MATCH,兜底规则
 
 ######### 规则锚点 #######
