@@ -1,0 +1,235 @@
+
+#!name = mihomo TUN 配置文件
+#!desc = 说明：理论上适用于所有的 Meta 内核，使用最新的 mrs 规则
+#!date = 2024-10-18 19:50
+#!source = https://wiki.metacubex.one/example/conf/#__tabbed_1_2
+#!author = Abcd789JK
+
+# 这里是机场订阅更新和延迟测试相关锚点
+pr: &pr {type: http, interval: 3600, health-check: {enable: true, url: "https://www.gstatic.com/generate_204", interval: 300}}
+
+# 机场配置
+
+# 全局配置
+ipv6: true
+allow-lan: true
+mixed-port: 7890
+tproxy-port: 7891
+unified-delay: true
+tcp-concurrent: true
+
+# 配置 WEB UI
+external-ui: ui
+external-controller: 0.0.0.0:9090
+external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+
+find-process-mode: strict
+global-client-fingerprint: chrome
+
+# profile 应为扩展配置，但在 mihomo, 仅作为缓存项使用
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# 嗅探域名 可选配置
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+# 自动配置 iptables
+iptables: 
+  enable: true
+  inbound-interface: eth0
+
+# DNS 配置
+dns:
+  enable: true
+  ipv6: true
+  listen: 0.0.0.0:53
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-filter:
+    - "*"
+    - "+.lan"
+    - "+.local"
+    - "+.market.xiaomi.com"
+  nameserver:
+    - https://120.53.53.53/dns-query
+    - https://223.5.5.5/dns-query
+  proxy-server-nameserver:
+    - https://120.53.53.53/dns-query
+    - https://223.5.5.5/dns-query
+  nameserver-policy:
+    "rule-set:China":
+      - https://120.53.53.53/dns-query
+      - https://223.5.5.5/dns-query
+    "rule-set:GlobalGFW":
+      - "https://dns.cloudflare.com/dns-query"
+      - "https://dns.google/dns-query"
+
+# 单个出站代理节点
+proxies: 
+  - name: "国内直连"
+    type: direct
+    udp: true
+    
+# 策略组相关
+pg: &pg {type: select, proxies: [默认选择,自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]}
+# 手动选择策略
+mt: &mt {type: select, include-all: true}
+# 自动优选策略
+at: &at {type: url-test, include-all: true, interval: 6, tolerance: 20, lazy: true, url: "https://www.gstatic.com/generate_204"}
+
+# 策略组
+proxy-groups:
+  # 策略分组
+  - name: 默认选择
+    type: select
+    proxies: [自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 海外加速
+    <<: *pg
+  - name: 海外媒体
+    <<: *pg
+  - name: 谷歌服务
+    <<: *pg
+  - name: 微软服务
+    <<: *pg
+  - name: 电报信息
+    <<: *pg
+  - name: 社交平台
+    <<: *pg
+  - name: OpenAI
+    <<: *pg
+  - name: 游戏平台
+    type: select
+    proxies: [国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 苹果服务
+    type: select
+    proxies: [国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  - name: 兜底规则
+    type: select
+    proxies: [自动选择,国内直连,香港,台湾,日本,狮城,美国,其它地区,全部节点]
+  # 地区分组
+  - name: 香港
+    type: select
+    include-all: true
+    filter: "(?i)港|hk|hongkong|hong kong"
+  - name: 台湾
+    type: select
+    include-all: true
+    filter: "(?i)台|tw|taiwan"
+  - name: 日本
+    type: select
+    include-all: true
+    filter: "(?i)日|jp|japan"
+  - name: 美国
+    type: select
+    include-all: true
+    filter: "(?i)美|us|unitedstates|united states"
+  - name: 狮城
+    type: select
+    include-all: true
+    filter: "(?i)(新|sg|singapore)"
+  - name: 其它地区
+    type: select
+    include-all: true
+    filter: "(?i)^(?!.*(?:🇭🇰|🇯🇵|🇺🇸|🇸🇬|🇨🇳|港|hk|hongkong|台|tw|taiwan|日|jp|japan|新|sg|singapore|美|us|unitedstates)).*"
+  - name: 全部节点
+    type: select
+    include-all: true
+  - name: 自动选择
+    type: url-test
+    include-all: true
+    tolerance: 10
+
+# 规则策略
+rules:
+  # 域名规则
+  - RULE-SET,Local_ip,国内直连,no-resolve
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,YouTube,谷歌服务
+  - RULE-SET,Google,谷歌服务
+  - RULE-SET,GitHub,微软服务
+  - RULE-SET,OneDrive,微软服务
+  - RULE-SET,Microsoft,微软服务
+  - RULE-SET,Epic,游戏平台
+  - RULE-SET,Steam,游戏平台
+  - RULE-SET,Telegram,电报信息
+  - RULE-SET,PayPal,社交平台
+  - RULE-SET,Spotify,社交平台
+  - RULE-SET,Twitter,社交平台 
+  - RULE-SET,Instagram,社交平台
+  - RULE-SET,Facebook,社交平台
+  - RULE-SET,TikTok,海外媒体
+  - RULE-SET,Disney,海外媒体
+  - RULE-SET,Netflix,海外媒体
+  - RULE-SET,Apple,苹果服务
+  - RULE-SET,Bilibili,国内直连
+  - RULE-SET,China,国内直连
+  - RULE-SET,GlobalGFW,海外加速
+  # ipcidr
+  - RULE-SET,Google_ip,谷歌服务
+  - RULE-SET,Telegram_ip,电报信息
+  - RULE-SET,Twitter_ip,社交平台
+  - RULE-SET,Facebook_ip,社交平台
+  - RULE-SET,Netflix_ip,海外媒体
+  - RULE-SET,China_ip,国内直连
+  - MATCH,兜底规则
+
+######### 规则锚点 #######
+rule-anchor:
+  # ipcidr 规则相关
+  ipcidr: &ipcidr {type: http, interval: 43200, behavior: ipcidr, format: mrs}
+  # domain 规则相关
+  domain: &domain {type: http, interval: 43200, behavior: domain, format: mrs}
+
+# 规则集订阅
+rule-providers:
+  # ChatGPT
+  OpenAI: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Openai.mrs}
+  # 谷歌
+  YouTube: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/YouTube.mrs}
+  Google: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Google.mrs}
+  # 微软
+  GitHub: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/GitHub.mrs}
+  OneDrive: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/OneDrive.mrs}
+  Microsoft: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Microsoft.mrs}
+  # 游戏
+  Epic: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Epic.mrs}
+  Steam: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Steam.mrs}
+  # 社交
+  Telegram: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/telegram.mrs}
+  Facebook: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Facebook.mrs}
+  Instagram: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Instagram.mrs}
+  PayPal: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/PayPal.mrs}
+  Twitter: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Twitter.mrs}
+  Spotify: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Spotify.mrs}
+  # 影视
+  Netflix: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Netflix.mrs}
+  Disney: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Disney.mrs}
+  TikTok: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/tiktok.mrs}
+  # 海外
+  GlobalGFW: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Global.mrs}
+  # 苹果
+  Apple: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Apple.mrs}
+  # 国内
+  Bilibili: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/Bilibili.mrs}
+  China: {<<: *domain, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geosite/China.mrs}
+  # ipcidr
+  Google_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/Google.mrs}
+  Twitter_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/Twitter.mrs}
+  Netflix_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/Netflix.mrs}
+  Telegram_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/telegram.mrs}
+  Facebook_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/Facebook.mrs}
+  China_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/China.mrs}
+  Local_ip: {<<: *ipcidr, url: https://github.com/Abcd789JK/Tools/raw/main/Ruleset/mihomo/geoip/Local.mrs}
