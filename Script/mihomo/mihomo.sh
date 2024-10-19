@@ -53,7 +53,7 @@ Check_install(){
 
 # 检查服务状态
 Check_status() {
-    if pgrep -x "mihomo" > /dev/null; then
+    if pgrep -f "/root/mihomo/mihomo" > /dev/null; then
         status="running"
     else
         status="stopped"
