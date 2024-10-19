@@ -136,6 +136,8 @@ Install_mihomo(){
     fi
     # 刷新可执行文件缓存
     hash -r
+    # 删除安装脚本
+    rm -f /root/install.sh
     # 开始配置
     Config_mihomo
 }
