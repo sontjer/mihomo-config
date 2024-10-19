@@ -51,9 +51,10 @@ Check_install(){
     fi
 }
 
-# 检查服务状态
+# 在脚本中保存 mihomo 进程的 PID
 Check_status() {
-    if pgrep -x "mihomo" > /dev/null; then
+    pid=$(pgrep -x "mihomo")
+    if [ -n "$pid" ] && ps -p "$pid" > /dev/null; then
         status="running"
     else
         status="stopped"
