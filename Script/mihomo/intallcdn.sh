@@ -121,7 +121,7 @@ Install_mihomo(){
     chmod +x "$SYSTEM_FILE"
     echo -e "${Green}mihomo 安装完成，开始配置${Reset}"
     # 下载菜单管理脚本
-    sh_url="https://gh-proxy.com/https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/mihomo/mihomocdn.sh"
+    sh_url="https://gh-proxy.com/https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/mihomo/mihomo.sh"
     # 删除旧的 /usr/bin/mihomo 文件
     if [ -f "/usr/bin/mihomo" ]; then
         rm /usr/bin/mihomo
