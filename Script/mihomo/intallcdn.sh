@@ -83,7 +83,7 @@ Install_mihomo(){
     Get_schema
     echo -e "当前系统架构：[ ${Green}${ARCH_RAW}${Reset} ]"
     # 获取版本信息
-    VERSION_URL="https://gh-proxy.com/https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt"
+    VERSION_URL="https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt"
     VERSION=$(curl -sSL "$VERSION_URL") || { echo -e "${Red}获取远程版本失败${Reset}"; exit 1; }
     echo -e "当前软件版本：[ ${Green}${VERSION}${Reset} ]"
     echo "$VERSION" > "$VERSION_FILE"
