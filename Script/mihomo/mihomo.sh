@@ -3,7 +3,7 @@
 #!name = mihomo 一键管理脚本
 #!desc = 支持，安装、更新、卸载、修改配置等
 #!date = 2024-10-22 11:00
-#!author = Abcd789JK ChatGPT
+#!author = ChatGPT
 
 set -e -o pipefail
 
