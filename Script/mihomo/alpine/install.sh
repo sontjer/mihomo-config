@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 #!name = mihomo 一键安装脚本
 #!desc = 安装
 #!date = 2024-10-07 20:50
 #!author = ChatGPT
 
-set -e
+set -e -o pipefail
 
 # 颜色代码
 Red="\033[31m"  ## 红色
@@ -17,10 +17,14 @@ Cyan="\033[36m"  ## 青色
 White="\033[37m"  ## 白色
 Reset="\033[0m"  ## 黑色
 
+# 脚本版本
+sh_ver="0.0.1"
+
 # 变量路径
 FOLDERS="/root/mihomo"
 FILE="/root/mihomo/mihomo"
 WEB_FILE="/root/mihomo/ui"
+SYSCTL_FILE="/etc/sysctl.conf"
 CONFIG_FILE="/root/mihomo/config.yaml"
 VERSION_FILE="/root/mihomo/version.txt"
 SYSTEM_FILE="/etc/systemd/system/mihomo.service"
@@ -43,7 +47,7 @@ GetLocal_ip(){
 Check_ip_forward() {
     if ! sysctl net.ipv4.ip_forward | grep -q "1"; then
         sysctl -w net.ipv4.ip_forward=1
-        echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+        echo "net.ipv4.ip_forward=1" | tee -a "$SYSCTL_FILE" > /dev/null
         sysctl -p > /dev/null
         echo -e "${Green}IP 转发已成功开启并立即生效${Reset}"
     fi
@@ -70,7 +74,7 @@ Install_mihomo(){
     if [ -d "${FOLDERS}" ]; then
         rm -rf "${FOLDERS}"
     fi
-    mkdir -p "${FOLDERS}" && cd "${FOLDERS}" 
+    mkdir -p "${FOLDERS}" && cd "${FOLDERS}"
     Get_schema
     echo -e "当前系统架构：[ ${Green}${ARCH_RAW}${Reset} ]"
     VERSION_URL="https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt"
@@ -78,28 +82,72 @@ Install_mihomo(){
     echo -e "当前软件版本：[ ${Green}${VERSION}${Reset} ]"
     echo "$VERSION" > "$VERSION_FILE"
     
-    FILENAME="mihomo-linux-${ARCH}-${VERSION}.gz"
+    if [[ "$ARCH" == 'amd64' ]]; then
+        FILENAME="mihomo-linux-${ARCH}-compatible-${VERSION}.gz"
+    elif [[ "$ARCH" =~ ^(arm64|armv7|s390x|386)$ ]]; then
+        FILENAME="mihomo-linux-${ARCH}-${VERSION}.gz"
+    else
+        echo -e "${Red}不支持的架构：${ARCH}${Reset}"
+        exit 1
+    fi
+
     DOWNLOAD_URL="https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${FILENAME}"
     sleep 3s
     wget -t 3 -T 30 "${DOWNLOAD_URL}" -O "${FILENAME}" || { echo -e "${Red}下载失败${Reset}"; exit 1; }
     gunzip "$FILENAME" || { echo -e "${Red}解压失败${Reset}"; exit 1; }
-
+    
     mv "mihomo-linux-${ARCH}-${VERSION}" mihomo || { echo -e "${Red}找不到解压后的文件${Reset}"; exit 1; }
     chmod 755 mihomo
 
     WEB_URL="https://github.com/metacubex/metacubexd.git"
     git clone "$WEB_URL" -b gh-pages "$WEB_FILE" || { echo -e "${Red}管理面板下载失败${Reset}"; exit 1; }
-    
-    SYSTEM_URL="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Service/mihomo.service"
-    curl -s -o "$SYSTEM_FILE" "$SYSTEM_URL" || { echo -e "${Red}系统服务下载失败${Reset}"; exit 1; }
-    chmod +x "$SYSTEM_FILE"
+
+    # 创建 OpenRC 服务文件
+    SERVICE_FILE="/etc/init.d/mihomo"
+    cat << EOF > "$SERVICE_FILE"
+#!/sbin/openrc-run
+
+command=/root/mihomo/mihomo
+command_args=""
+pidfile=/run/mihomo.pid
+name="mihomo"
+
+depend() {
+    after net
+    before shutdown
+}
+
+start() {
+    ebegin "Starting \${name}"
+    start-stop-daemon --start --make-pidfile --pidfile \${pidfile} --background --exec \${command} -- \${command_args}
+    eend \$?
+}
+
+stop() {
+    ebegin "Stopping \${name}"
+    start-stop-daemon --stop --pidfile \${pidfile}
+    eend \$?
+}
+EOF
+
+    chmod +x "$SERVICE_FILE"
+    rc-update add mihomo default
+
     echo -e "${Green}mihomo 安装完成，开始配置${Reset}"
 
     sh_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/mihomo/mihomo.sh"
+    if [ -f "/usr/bin/mihomo" ]; then
+        rm /usr/bin/mihomo
+    fi
     wget -q -O /usr/bin/mihomo --no-check-certificate "$sh_url"
     chmod +x /usr/bin/mihomo
 
-    echo -e "${Green}已设置开机自启动${Reset}"
+    if [[ ":$PATH:" != *":/usr/bin:"* ]]; then
+        export PATH=$PATH:/usr/bin
+    fi
+
+    hash -r
+    rm -f /root/install.sh
     Config_mihomo
 }
 
@@ -111,7 +159,7 @@ Config_mihomo(){
     while true; do
         read -p "请输入需要配置的机场数量（默认 1 个，最多 5 个）：" airport_count
         airport_count=${airport_count:-1}
-        if [ "$airport_count" -ge 1 ] && [ "$airport_count" -le 5 ]; then
+        if [[ "$airport_count" =~ ^[0-9]+$ ]] && [ "$airport_count" -ge 1 ] && [ "$airport_count" -le 5 ]; then
             break
         else
             echo -e "${Red}无效的数量，请输入 1 到 5 之间的正整数。${Reset}"
@@ -119,8 +167,7 @@ Config_mihomo(){
     done
 
     proxy_providers="proxy-providers:"
-    i=1
-    while [ $i -le "$airport_count" ]; do
+    for ((i=1; i<=airport_count; i++)); do
         read -p "请输入第 $i 个机场的订阅连接：" airport_url
         read -p "请输入第 $i 个机场的名称：" airport_name
         
@@ -132,7 +179,6 @@ Config_mihomo(){
     health-check: {enable: true,url: \"https://www.gstatic.com/generate_204\",interval: 300}
     override:
       additional-prefix: \"[$airport_name]\""
-        i=$((i + 1))
     done
 
     awk -v providers="$proxy_providers" '
@@ -148,6 +194,7 @@ Config_mihomo(){
     systemctl daemon-reload
     systemctl start mihomo
     systemctl enable mihomo
+    echo -e "${Green}已设置开机自启动${Reset}"
     
     GetLocal_ip
     echo -e ""
