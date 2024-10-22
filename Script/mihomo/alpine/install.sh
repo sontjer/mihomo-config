@@ -111,7 +111,7 @@ Config_mihomo(){
     while true; do
         read -p "请输入需要配置的机场数量（默认 1 个，最多 5 个）：" airport_count
         airport_count=${airport_count:-1}
-        if [[ "$airport_count" =~ ^[0-9]+$ ]] && [ "$airport_count" -ge 1 ] && [ "$airport_count" -le 5 ]; then
+        if [ "$airport_count" -ge 1 ] && [ "$airport_count" -le 5 ]; then
             break
         else
             echo -e "${Red}无效的数量，请输入 1 到 5 之间的正整数。${Reset}"
@@ -119,7 +119,8 @@ Config_mihomo(){
     done
 
     proxy_providers="proxy-providers:"
-    for ((i=1; i<=airport_count; i++)); do
+    i=1
+    while [ $i -le "$airport_count" ]; do
         read -p "请输入第 $i 个机场的订阅连接：" airport_url
         read -p "请输入第 $i 个机场的名称：" airport_name
         
@@ -131,6 +132,7 @@ Config_mihomo(){
     health-check: {enable: true,url: \"https://www.gstatic.com/generate_204\",interval: 300}
     override:
       additional-prefix: \"[$airport_name]\""
+        i=$((i + 1))
     done
 
     awk -v providers="$proxy_providers" '
