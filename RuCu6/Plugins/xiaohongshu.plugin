@@ -5,7 +5,8 @@
 #!date = 2024-10-15 10:45
 
 [Rule]
-AND, ((PROTOCOL, UDP), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT
+AND, ((PROTOCOL, UDP), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT-NO-DROP
+AND, ((PROTOCOL, QUIC), (DOMAIN-SUFFIX, xiaohongshu.com)), REJECT-NO-DROP
 
 [Rewrite]
 # 惊喜弹窗
