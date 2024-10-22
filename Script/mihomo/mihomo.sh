@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键管理脚本
 #!desc = 支持，安装、更新、卸载、修改配置等
-#!date = 2024-10-18 16:15
+#!date = 2024-10-22 11:00
 #!author = Abcd789JK ChatGPT
 
 set -e -o pipefail
@@ -18,7 +18,7 @@ White="\033[37m"  ## 白色
 Reset="\033[0m"  ## 黑色
 
 # 定义脚本版本
-sh_ver="0.0.5"
+sh_ver="0.0.6"
 
 # 全局变量路径
 FOLDERS="/root/mihomo"
