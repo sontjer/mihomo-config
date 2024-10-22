@@ -168,9 +168,11 @@ Config_mihomo(){
         read -p "请输入第 $i 个机场的名称：" airport_name
         
         proxy_providers="$proxy_providers
-  Airport_0$i:
-    <<: *pr
+  provider_0$i:
     url: \"$airport_url\"
+    type: http
+    interval: 86400
+    health-check: {enable: true,url: "https://www.gstatic.com/generate_204",interval: 300}
     override:
       additional-prefix: \"[$airport_name]\""
     done
