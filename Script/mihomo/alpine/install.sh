@@ -82,9 +82,9 @@ Install_mihomo(){
     echo -e "当前软件版本：[ ${Green}${VERSION}${Reset} ]"
     echo "$VERSION" > "$VERSION_FILE"
     
-    if [[ "$ARCH" == 'amd64' ]]; then
+    if [ "$ARCH" = 'amd64' ]; then
         FILENAME="mihomo-linux-${ARCH}-compatible-${VERSION}.gz"
-    elif [[ "$ARCH" =~ ^(arm64|armv7|s390x|386)$ ]]; then
+    elif echo "$ARCH" | grep -Eq '^(arm64|armv7|s390x|386)$'; then
         FILENAME="mihomo-linux-${ARCH}-${VERSION}.gz"
     else
         echo -e "${Red}不支持的架构：${ARCH}${Reset}"
