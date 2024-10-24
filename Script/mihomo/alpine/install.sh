@@ -102,36 +102,9 @@ Install_mihomo(){
     WEB_URL="https://github.com/metacubex/metacubexd.git"
     git clone "$WEB_URL" -b gh-pages "$WEB_FILE" || { echo -e "${Red}管理面板下载失败${Reset}"; exit 1; }
 
-    # 创建 OpenRC 服务文件
-    SERVICE_FILE="/etc/init.d/mihomo"
-    cat << EOF > "$SERVICE_FILE"
-#!/sbin/openrc-run
-
-command=/root/mihomo/mihomo
-command_args=""
-pidfile=/run/mihomo.pid
-name="mihomo"
-
-depend() {
-    after net
-    before shutdown
-}
-
-start() {
-    ebegin "Starting \${name}"
-    start-stop-daemon --start --make-pidfile --pidfile \${pidfile} --background --exec \${command} -- \${command_args}
-    eend \$?
-}
-
-stop() {
-    ebegin "Stopping \${name}"
-    start-stop-daemon --stop --pidfile \${pidfile}
-    eend \$?
-}
-EOF
-
-    chmod +x "$SERVICE_FILE"
-    rc-update add mihomo default
+    wget https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Service/mihomo.openrc -O /etc/init.d/mihomo
+    chmod +x /etc/init.d/mihomo
+    rc-update add mihomo
 
     echo -e "${Green}mihomo 安装完成，开始配置${Reset}"
 
