@@ -2,19 +2,18 @@
 
 #!name = mihomo 一键安装脚本
 #!desc = 安装
-#!date = 2024-10-25 20:50
+#!date = 2024-10-27 15:00
 #!author = ChatGPT
 
 set -e -o pipefail
 
+# 颜色定义
 red="\033[31m"  ## 红色
 green="\033[32m"  ## 绿色 
 yellow="\033[33m"  ## 黄色
 blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
-
-sh_ver="1.0.1"
 
 folders="/root/mihomo"
 file="${folders}/mihomo"
@@ -24,6 +23,8 @@ sysctl_file="/etc/sysctl.conf"
 config_file="${folders}/config.yaml"
 version_file="${folders}/version.txt"
 system_file="/etc/systemd/system/mihomo.service"
+
+sh_ver="1.0.1"
 
 use_cdn=false
 
@@ -53,8 +54,12 @@ check_ip_forward() {
     if ! sysctl net.ipv4.ip_forward | grep -q "1"; then
         sysctl -w net.ipv4.ip_forward=1
         echo "net.ipv4.ip_forward=1" | tee -a "$sysctl_file" > /dev/null
-        sysctl -p > /dev/null
     fi
+    if ! sysctl net.ipv6.conf.all.forwarding | grep -q "1"; then
+        sysctl -w net.ipv6.conf.all.forwarding=1
+        echo "net.ipv6.conf.all.forwarding=1" | tee -a "$sysctl_file" > /dev/null
+    fi
+    sysctl -p > /dev/null
 }
 
 get_schema() {
@@ -79,16 +84,14 @@ download_mihomo() {
     local filename
     [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
-
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
     wget -t 3 -T 30 "${download_url}" -O "${filename}" || { echo -e "${red}mihomo 下载失败，可能是网络问题，建议重新运行本脚本重试下载${reset}"; exit 1; }
     gunzip "$filename" || { echo -e "${red}mihomo 解压失败${reset}"; exit 1; }
-
     mv "mihomo-linux-${arch}-compatible-${version}" mihomo 2>/dev/null || mv "mihomo-linux-${arch}-${version}" mihomo || { echo -e "${red}找不到解压后的文件${reset}"; exit 1; }
     chmod +x mihomo
 }
 
-download_ui() {
+download_wbeui() {
     local wbe_url=$(get_url "https://github.com/metacubex/metacubexd.git")
     git clone "$wbe_url" -b gh-pages "$wbe_file" || { echo -e "${red}管理面板下载失败，可能是网络问题，建议重新运行本脚本重试下载${reset}"; exit 1; }
 }
@@ -124,8 +127,8 @@ install_mihomo() {
     download_version
     echo -e "当前软件版本：[ ${green}${version}${reset} ]"
     download_mihomo
-    download_ui
     download_service
+    download_wbeui
     download_sh
     read -p "$(echo -e "${green}安装完成，是否下载配置文件\n${yellow}你也可以上传自己的配置文件到 ${folders} 目录下\n${red}配置文件名称必须是 config.yaml ${reset}，是否继续(y/n): ")" choice
     case "$choice" in
