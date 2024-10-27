@@ -2,7 +2,7 @@
 
 #!name = mihomo 配置文件脚本
 #!desc = 配置文件
-#!date = 2024-10-27 11:10
+#!date = 2024-10-27 15:00
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -15,10 +15,10 @@ blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
 
-sh_ver="1.0.1"
-
 folders="/root/mihomo"
 config_file="${folders}/config.yaml"
+
+sh_ver="1.0.1"
 
 use_cdn=false
 
