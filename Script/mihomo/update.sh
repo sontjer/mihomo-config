@@ -31,6 +31,11 @@ get_url() {
     [ "$use_cdn" = true ] && echo "https://gh-proxy.com/$url" || echo "$url"
 }
 
+start_main() {
+    echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" && read temp
+    main
+}
+
 get_schema() {
     arch_raw=$(uname -m)
     case "${arch_raw}" in
@@ -76,8 +81,6 @@ download_mihomo() {
     mv "mihomo-linux-${arch}-compatible-${version}" mihomo 2>/dev/null || mv "mihomo-linux-${arch}-${version}" mihomo || { echo -e "${red}找不到解压后的文件${reset}"; exit 1; }
     chmod +x mihomo
     echo "$version" > "$version_file"
-    systemctl daemon-reload
-    systemctl restart mihomo
 }
 
 update_mihomo() {
@@ -102,11 +105,11 @@ update_mihomo() {
             [Yy]* )
                 download_mihomo
                 echo -e "${green}更新完成，当前版本已更新为：[ ${latest_version} ]${reset}"
-                break
+                start_main
                 ;;
             [Nn]* )
                 echo -e "${red}更新已取消${reset}"
-                break
+                start_main
                 ;;
             * )
                 echo -e "${red}无效的输入，请输入 y 或 n${reset}"
