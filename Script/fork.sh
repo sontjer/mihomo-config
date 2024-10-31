@@ -1,4 +1,4 @@
-# 2024-10-17 10:00
+# 2024-10-31 18:40
 
 #!/bin/bash
 
@@ -7,6 +7,9 @@ mkdir -p Tools/Ruleset/mihomo/{geoip,geosite}
 
 #--- mihomo mrs ---#
 # geosite
+# ADS
+curl -L -o Tools-repo/Ruleset/mihomo/geosite/Ads.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"
+
 # 本地/局域网
 curl -L -o Tools-repo/Ruleset/mihomo/geosite/Local.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
 
@@ -51,6 +54,7 @@ curl -L -o Tools-repo/Ruleset/mihomo/geosite/Bilibili.mrs "https://raw.githubuse
 curl -L -o Tools-repo/Ruleset/mihomo/geosite/Disney.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/disney.mrs"
 curl -L -o Tools-repo/Ruleset/mihomo/geosite/Netflix.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"
 curl -L -o Tools-repo/Ruleset/mihomo/geosite/Spotify.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"
+
 
 # geoip
 curl -L -o Tools-repo/Ruleset/mihomo/geoip/Local.mrs "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"
