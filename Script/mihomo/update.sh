@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键更新脚本
 #!desc = 更新
-#!date = 2024-10-27 17:15
+#!date = 2024-11-03 22:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -13,10 +13,6 @@ yellow="\033[33m"  ## 黄色
 blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
-
-folders="/root/mihomo"
-file="${folders}/mihomo"
-version_file="${folders}/version.txt"
 
 sh_ver="1.0.1"
 
@@ -36,6 +32,22 @@ start_main() {
     main
 }
 
+get_version() {
+    if [ -f "$version_file" ]; then
+        cat "$version_file"
+    else
+        echo -e "${red}请先安装 mihomo${reset}"
+        start_main
+    fi
+}
+
+get_install() {
+    if [ ! -f "$file" ]; then
+        echo -e "${red}请先安装 mihomo${reset}"
+        start_main
+    fi
+}
+
 get_schema() {
     arch_raw=$(uname -m)
     case "${arch_raw}" in
@@ -48,22 +60,6 @@ get_schema() {
     esac
 }
 
-get_version() {
-    if [ -f "$version_file" ]; then
-        cat "$version_file"
-    else
-        echo -e "${red}请先安装 mihomo${reset}"
-        exit 1
-    fi
-}
-
-get_install() {
-    if [ ! -f "$file" ]; then
-        echo -e "${red}请先安装 mihomo${reset}"
-        exit 1
-    fi
-}
-
 download_version() {
     local version_url
     version_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt")
@@ -71,8 +67,10 @@ download_version() {
 }
 
 download_mihomo() {
-    get_schema
+    local version_file="/root/mihomo/version.txt"
     local filename
+    get_schema
+    download_version
     [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
@@ -84,6 +82,7 @@ download_mihomo() {
 }
 
 update_mihomo() {
+    local folders="/root/mihomo"
     get_install
     echo -e "${green}开始检查 mihomo 是否有更新${reset}"
     cd "$folders" || exit
@@ -94,7 +93,7 @@ update_mihomo() {
         echo -e "当前版本：[ ${green}${current_version}${reset} ]"
         echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
         echo -e "${green}当前已是最新版本，无需更新${reset}"
-        return
+        start_main
     fi
     echo -e "${green}检查到 mihomo 已有新版本${reset}"
     echo -e "当前版本：[ ${green}${current_version}${reset} ]"
