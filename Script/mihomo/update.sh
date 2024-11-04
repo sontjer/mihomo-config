@@ -33,6 +33,7 @@ start_main() {
 }
 
 get_version() {
+    local version_file="/root/mihomo/version.txt"
     if [ -f "$version_file" ]; then
         cat "$version_file"
     else
@@ -42,6 +43,7 @@ get_version() {
 }
 
 get_install() {
+    local file="/root/mihomo/mihomo"
     if [ ! -f "$file" ]; then
         echo -e "${red}请先安装 mihomo${reset}"
         start_main
