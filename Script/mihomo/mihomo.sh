@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键管理脚本
 #!desc = 管理
-#!date = 2024-10-27 17:20
+#!date = 2024-11-03 22:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -14,16 +14,7 @@ blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
 
-sh_ver="0.0.1"
-
-folders="/root/mihomo"
-file="${folders}/mihomo"
-sh_file="/usr/bin/mihomo"
-wbe_file="${folders}/ui"
-sysctl_file="/etc/sysctl.conf"
-config_file="${folders}/config.yaml"
-version_file="${folders}/version.txt"
-system_file="/etc/systemd/system/mihomo.service"
+sh_ver="0.0.2"
 
 use_cdn=false
 
@@ -42,6 +33,7 @@ start_main() {
 }
 
 check_install() {
+    local file="/root/mihomo/mihomo"
     if [ ! -f "$file" ]; then
         echo -e "${red}请先安装 mihomo${reset}"
         start_main
@@ -49,6 +41,7 @@ check_install() {
 }
 
 check_status() {
+    local file="/root/mihomo/mihomo"
     if pgrep -f "$file" > /dev/null; then
         status="running"
     else
@@ -57,6 +50,7 @@ check_status() {
 }
 
 get_version() {
+    local version_file="/root/mihomo/version.txt"
     if [ -f "$version_file" ]; then
         cat "$version_file"
     else
@@ -65,6 +59,8 @@ get_version() {
 }
 
 show_status() {
+    local file="/root/mihomo/mihomo"
+    check_status
     if [ ! -f "$file" ]; then
         status="${red}未安装${reset}"
         run_status="${red}未运行${reset}"
@@ -90,91 +86,57 @@ show_status() {
     echo -e "开机自启：${auto_start}"
 }
 
-get_schema() {
-    arch_raw=$(uname -m)
-    case "${arch_raw}" in
-        'x86_64') arch='amd64';;
-        'x86' | 'i686' | 'i386') arch='386';;
-        'aarch64' | 'arm64') arch='arm64';;
-        'armv7l') arch='armv7';;
-        's390x') arch='s390x';;
-        *) echo -e "${red}不支持的架构：${arch_raw}${reset}"; exit 1;;
+manage_mihomo() {
+    local action="$1"
+    check_install
+    case "$action" in
+        start) 
+            action_text="启动" 
+            if systemctl is-active --quiet mihomo; then
+                echo -e "${yellow}mihomo 已经在运行，无需重复启动${reset}"
+                start_main
+            fi
+            ;;
+        stop) action_text="停止" ;;
+        restart) action_text="重启" ;;
     esac
-}
-
-start_mihomo() {
-    check_install
-    if systemctl is-active --quiet mihomo; then
-        echo -e "${green}mihomo 正在运行中${reset}"
-        start_main
-    fi
-    echo -e "${green}mihomo 准备启动中${reset}"
-    if systemctl start mihomo; then
-        echo -e "${green}mihomo 启动命令已发出${reset}"
-    else
-        echo -e "${red}mihomo 启动失败${reset}"
-        exit 1
-    fi
+    echo -e "${green}mihomo 准备${action_text}中${reset}"
+    systemctl "$action" mihomo
+    sleep 1s
+    echo -e "${green}mihomo ${action_text}命令已发出${reset}"
     sleep 3s
-    if systemctl is-active --quiet mihomo; then
-        echo -e "${green}mihomo 启动成功${reset}"
+    if [ "$action" = "stop" ]; then
+        if systemctl is-active --quiet mihomo; then
+            echo -e "${red}mihomo ${action_text}失败${reset}"
+        else
+            echo -e "${green}mihomo ${action_text}成功${reset}"
+        fi
     else
-        echo -e "${red}mihomo 启动失败${reset}"
-        exit 1
+        if systemctl is-active --quiet mihomo; then
+            echo -e "${green}mihomo ${action_text}成功${reset}"
+        else
+            echo -e "${red}mihomo ${action_text}失败${reset}"
+        fi
     fi
     start_main
 }
 
-stop_mihomo() {
-    check_install
-    if ! systemctl is-active --quiet mihomo; then
-        echo -e "${green}mihomo 已经停止${reset}"
-        exit 0
-    fi
-    echo -e "${green}mihomo 准备停止中${reset}"
-    if systemctl stop mihomo; then
-        echo -e "${green}mihomo 停止命令已发出${reset}"
-    else
-        echo -e "${red}mihomo 停止失败${reset}"
-        exit 1
-    fi
-    sleep 3s
-    if systemctl is-active --quiet mihomo; then
-        echo -e "${red}mihomo 停止失败${reset}"
-        exit 1
-    else
-        echo -e "${green}mihomo 停止成功${reset}"
-    fi
-    start_main
-}
-
-restart_mihomo() {
-    check_install
-    echo -e "${green}mihomo 准备重启中${reset}"
-    if systemctl restart mihomo; then
-        echo -e "${green}mihomo 重启命令已发出${reset}"
-    else
-        echo -e "${red}mihomo 重启失败${reset}"
-        exit 1
-    fi
-    sleep 3s
-    if systemctl is-active --quiet mihomo; then
-        echo -e "${green}mihomo 重启成功${reset}"
-    else
-        echo -e "${red}mihomo 启动失败${reset}"
-        exit 1
-    fi
-    start_main
-}
+start_mihomo() { manage_mihomo start; }
+stop_mihomo() { manage_mihomo stop; }
+restart_mihomo() { manage_mihomo restart; }
 
 uninstall_mihomo() {
+    local folders="/root/mihomo"
+    local shell_file="/usr/bin/mihomo"
+    local system_file="/etc/systemd/system/mihomo.service"
     check_install
     read -rp "确认卸载 mihomo 吗？(y/n): " confirm
     if [[ -z $confirm || $confirm =~ ^[Nn]$ ]]; then
         echo "卸载已取消。"
-        exit 0
+        start_main
     fi
     echo -e "${green}mihomo 开始卸载${reset}"
+    sleep 1s
     echo -e "${green}mihomo 卸载命令已发出${reset}"
     systemctl stop mihomo.service 2>/dev/null || { echo -e "${red}停止 mihomo 服务失败${reset}"; exit 1; }
     systemctl disable mihomo.service 2>/dev/null || { echo -e "${red}禁用 mihomo 服务失败${reset}"; exit 1; }
@@ -185,15 +147,16 @@ uninstall_mihomo() {
     if [ ! -f "$system_file" ] && [ ! -d "$folders" ]; then
         echo -e "${green}mihomo 卸载完成${reset}"
         echo ""
-        echo -e "卸载成功，如果你想删除此脚本，则退出脚本后，输入 ${green}rm /usr/bin/mihomo -f${reset} 进行删除"
+        echo -e "卸载成功，如果你想删除此脚本，则退出脚本后，输入 ${green}rm $shell_file -f${reset} 进行删除"
         echo ""
     else
         echo -e "${red}卸载过程中出现问题，请手动检查${reset}"
     fi
-    exit 0
+    start_main
 }
 
 update_shell() {
+    local shell_file="/usr/bin/mihomo"
     echo -e "${green}开始检查管理脚本是否有更新${reset}"
     sh_ver_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/mihomo/mihomo.sh"
     sh_new_ver=$(wget --no-check-certificate -qO- "$sh_ver_url" | grep 'sh_ver="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1)
@@ -211,11 +174,11 @@ update_shell() {
         case $confirm in
             [Yy]* )
                 echo -e "开始下载最新版本 [ ${green}${sh_new_ver}${reset} ]"
-                if [ -f "/usr/bin/mihomo" ]; then
-                    rm /usr/bin/mihomo
+                if [ -f "$shell_file" ]; then
+                    rm $shell_file
                 fi
-                wget -O /usr/bin/mihomo --no-check-certificate "$sh_ver_url"
-                chmod +x /usr/bin/mihomo
+                wget -O $shell_file --no-check-certificate "$sh_ver_url"
+                chmod +x $shell_file
                 if [[ ":$PATH:" != *":/usr/bin:"* ]]; then
                     export PATH=$PATH:/usr/bin
                 fi
@@ -228,7 +191,7 @@ update_shell() {
                 ;;
             [Nn]* )
                 echo -e "${red}更新已取消 ${reset}"
-                exit 1
+                start_main
                 ;;
             * )
                 echo -e "${red}无效的输入，请输入 y 或 n ${reset}"
@@ -256,6 +219,7 @@ download_config() {
 }
 
 download_mihomo() {
+    local file="/root/mihomo/mihomo"
     if [ -f "$file" ]; then
         echo -e "${red}mihomo 已安装，请勿重复安装！${reset}"
         start_main
