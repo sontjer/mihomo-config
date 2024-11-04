@@ -2,21 +2,17 @@
 
 #!name = mihomo 配置文件脚本
 #!desc = 配置文件
-#!date = 2024-10-27 15:00
+#!date = 2024-11-03 22:30
 #!author = ChatGPT
 
 set -e -o pipefail
 
-# 颜色定义
 red="\033[31m"  ## 红色
 green="\033[32m"  ## 绿色 
 yellow="\033[33m"  ## 黄色
 blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
-
-folders="/root/mihomo"
-config_file="${folders}/config.yaml"
 
 sh_ver="1.0.1"
 
@@ -38,6 +34,8 @@ get_local_ip() {
 }
 
 download_config() {
+    local folders="/root/mihomo"
+    local config_file="${folders}/config.yaml"
     echo -e "${cyan}-------------------------${reset}"
     echo -e "${yellow}1. TUN 模式${reset}"
     echo -e "${yellow}2. TProxy 模式${reset}"
