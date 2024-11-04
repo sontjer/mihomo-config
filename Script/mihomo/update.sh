@@ -29,7 +29,6 @@ get_url() {
 
 start_main() {
     echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" && read temp
-    main
 }
 
 get_version() {
