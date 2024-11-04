@@ -28,7 +28,9 @@ get_url() {
 }
 
 start_main() {
-    echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" && read temp
+    echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" 
+    read temp
+    exec /usr/bin/mihomo
 }
 
 get_version() {
