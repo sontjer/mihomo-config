@@ -158,7 +158,7 @@ uninstall_mihomo() {
 update_shell() {
     local shell_file="/usr/bin/mihomo"
     echo -e "${green}开始检查管理脚本是否有更新${reset}"
-    sh_ver_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/mihomo/mihomo.sh"
+    sh_ver_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/Beta/mihomo/mihomo.sh"
     sh_new_ver=$(wget --no-check-certificate -qO- "$sh_ver_url" | grep 'sh_ver="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1)
     if [ "$sh_ver" == "$sh_new_ver" ]; then
         echo -e "当前版本：[ ${green}${sh_ver}${reset} ]"
@@ -203,7 +203,7 @@ update_shell() {
 
 update_mihomo() {
     check_install
-    local update_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/mihomo/update.sh"
+    local update_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/Beta/mihomo/update.sh"
     update_url=$(get_url "$update_url")
     bash <(curl -Ls "$update_url")
     systemctl restart mihomo
@@ -212,7 +212,7 @@ update_mihomo() {
 
 download_config() {
     check_install
-    local config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/mihomo/config.sh"
+    local config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/Beta/mihomo/config.sh"
     config_url=$(get_url "$config_url")
     bash <(curl -Ls "$config_url")
     start_main
@@ -224,7 +224,7 @@ download_mihomo() {
         echo -e "${red}mihomo 已安装，请勿重复安装！${reset}"
         start_main
     fi
-    local install_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/mihomo/install.sh"
+    local install_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/Beta/mihomo/install.sh"
     install_url=$(get_url "$install_url")
     bash <(curl -Ls "$install_url")
 }
