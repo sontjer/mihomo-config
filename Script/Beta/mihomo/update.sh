@@ -74,7 +74,7 @@ download_mihomo() {
     local filename
     get_schema
     download_version
-    [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-${version}.gz" ||
+    [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-go120-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
     wget -t 3 -T 30 "${download_url}" -O "${filename}" || { echo -e "${red}mihomo 下载失败，可能是网络问题，建议重新运行本脚本重试下载${reset}"; exit 1; }
