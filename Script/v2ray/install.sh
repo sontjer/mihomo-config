@@ -29,7 +29,7 @@ get_url() {
 
 install_update() {
     apt update && apt upgrade -y
-    apt install -y curl git gzip wget nano unzip
+    apt install -y curl git gzip wget nano unzip jq
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     echo "Asia/Shanghai" | tee /etc/timezone > /dev/null
 }
@@ -106,7 +106,7 @@ install_v2ray() {
     echo -e "当前软件版本：[ ${green}${version}${reset} ]"
     download_v2ray
     download_service
-    download_shell
+    # download_shell
     read -p "$(echo -e "${green}安装完成，是否下载配置文件\n${yellow}你也可以上传自己的配置文件到 $folders 目录下\n${red}配置文件名称必须是 config.yaml ${reset}，是否继续(y/n): ")" choice
     case "$choice" in
         [Yy]* ) download_config ;;
@@ -117,4 +117,4 @@ install_v2ray() {
 }
 
 install_update
-install_mihomo
+install_v2ray

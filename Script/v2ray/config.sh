@@ -188,3 +188,5 @@ Config() {
     systemctl enable v2ray
     echo -e "${green}v2ray 已成功启动并设置为开机自启${reset}"
 }
+
+Config
