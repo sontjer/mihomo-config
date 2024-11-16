@@ -1,12 +1,12 @@
 {
     "inbounds": [
       {
-        "port": PORT, 
+        "port": port, 
         "protocol": "vmess",    
         "settings": {
           "clients": [
             {
-              "id": "UUID",  
+              "id": "uuid",  
               "alterId": 0
             }
           ]
