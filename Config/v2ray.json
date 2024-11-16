@@ -1,15 +1,18 @@
 {
   "inbounds": [
     {
-      "port": $PORT, 
+      "port": 53531, 
       "protocol": "vmess",    
       "settings": {
         "clients": [
           {
-            "id": "$UUID",  
+            "id": "af41686b-cb85-494a-a554-eeaa1514bca7",  
             "alterId": 0
           }
         ]
+      },
+      "streamSettings": {
+        "network": "tcp"
       }
     }
   ],
