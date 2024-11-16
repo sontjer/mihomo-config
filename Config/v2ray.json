@@ -1,23 +1,23 @@
 {
-    "inbounds": [
-      {
-        "port": port, 
-        "protocol": "vmess",    
-        "settings": {
-          "clients": [
-            {
-              "id": "uuid",  
-              "alterId": 0
-            }
-          ]
-        }
+  "inbounds": [
+    {
+      "port": PORT, 
+      "protocol": "vmess",    
+      "settings": {
+        "clients": [
+          {
+            "id": "UUID",  
+            "alterId": 0
+          }
+        ]
       }
-    ],
-    "outbounds": [
-      {
-        "protocol": "freedom",  
-        "settings": {}
-      }
-    ],
-    "vmess-aead": true
-  }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",  
+      "settings": {}
+    }
+  ],
+  "vmess-aead": true
+}
