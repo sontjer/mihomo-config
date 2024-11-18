@@ -71,6 +71,8 @@ esac
 
 # === 安装前检查 ===
 echo "正在检查系统更新和安装依赖..."
+
+# 更新包列表并安装依赖
 apt update -y
 apt install -y socat curl
 
@@ -83,15 +85,6 @@ install_acme() {
     exit 1
   fi
 }
-
-# 确保 acme.sh 在路径中
-export PATH=$PATH:/root/.acme.sh
-
-# 检查 acme.sh 是否可用
-if ! command -v acme.sh &> /dev/null; then
-  echo "错误：acme.sh 未找到，请检查安装路径！"
-  exit 1
-fi
 
 # 安装证书
 install_cert() {
