@@ -2,7 +2,7 @@
 
 #!name = v2ray 一键安装脚本
 #!desc = 安装
-#!date = 2024-11-16 22:30
+#!date = 2024-11-18 19:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -27,13 +27,6 @@ get_url() {
     [ "$use_cdn" = true ] && echo "https://gh-proxy.com/$url" || echo "$url"
 }
 
-install_update() {
-    apt update && apt upgrade -y
-    apt install -y curl git gzip wget nano unzip jq
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-    echo "Asia/Shanghai" | tee /etc/timezone > /dev/null
-}
-
 get_schema(){
     arch_raw=$(uname -m)
     case "${arch_raw}" in
@@ -46,18 +39,25 @@ get_schema(){
     esac
 }
 
-download_version() {
-    local version_url=$(get_url "https://api.github.com/repos/v2fly/v2ray-core/releases/latest")
+get_version() {
+    local version_url="https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
     version=$(curl -sSL "$version_url" | jq -r '.tag_name' | sed 's/v//') || {
         echo -e "${red}获取 v2ray 远程版本失败${reset}";
         exit 1;
     }
 }
 
+install_update() {
+    apt update && apt upgrade -y
+    apt install -y curl git gzip wget nano unzip jq
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    echo "Asia/Shanghai" | tee /etc/timezone > /dev/null
+}
+
 download_v2ray() {
     local version_file="/root/v2ray/version.txt"
     local filename
-    download_version
+    get_version
     case "$arch" in
         '64' | '32' | 'arm64-v8a' | 'arm32-v7a' | 's390x') 
             filename="v2ray-linux-${arch}.zip";;
@@ -102,11 +102,11 @@ install_v2ray() {
     mkdir -p "$folders" && cd "$folders" 
     get_schema
     echo -e "当前系统架构：[ ${green}${arch_raw}${reset} ]" 
-    download_version
+    get_version
     echo -e "当前软件版本：[ ${green}${version}${reset} ]"
     download_v2ray
     download_service
-    # download_shell
+    download_shell
     read -p "$(echo -e "${green}安装完成，是否下载配置文件\n${yellow}你也可以上传自己的配置文件到 $folders 目录下\n${red}配置文件名称必须是 config.yaml ${reset}，是否继续(y/n): ")" choice
     case "$choice" in
         [Yy]* ) download_config ;;
