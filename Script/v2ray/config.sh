@@ -44,25 +44,29 @@ Config() {
         echo -e "请选择协议："
         echo -e "${green}1${reset}、vmess+tcp"
         echo -e "${green}2${reset}、vmess+ws"
-        read -rp "输入数字选择协议 (1-2 默认[1]): " confirm
+        echo -e "${green}3${reset}、vmess+tcp+tls"
+        echo -e "${green}4${reset}、vmess+ws+tls"
+        read -rp "输入数字选择协议 (1-4 默认[1]): " confirm
         confirm=${confirm:-1}  # 默认为 1
         # 随机生成配置项
         PORT=$(shuf -i 10000-65000 -n 1)
         UUID=$(cat /proc/sys/kernel/random/uuid)
         # 如果选择了 WebSocket 协议
-        if [[ "$confirm" == "2" ]]; then
-            WS_PATH=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
+        if [[ "$confirm" == "2" || "$confirm" == "4" ]]; then
+            WS_PATH=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 12)
         fi
         # 显示生成的配置
         echo -e "配置文件已生成："
         case $confirm in
             1) echo -e "  - 协议: ${green}vmess+tcp${reset}" ;;
             2) echo -e "  - 协议: ${green}vmess+ws${reset}" ;;
+            3) echo -e "  - 协议: ${green}vmess+tcp+tls${reset}" ;;
+            4) echo -e "  - 协议: ${green}vmess+ws+tls${reset}" ;;
             *) echo -e "${red}无效选项${reset}" && exit 1 ;;
         esac
         echo -e "  - 端口: ${green}$PORT${reset}"
         echo -e "  - UUID: ${green}$UUID${reset}"
-        if [[ "$confirm" == "2" ]]; then
+        if [[ "$confirm" == "2" || "$confirm" == "4" ]]; then
             echo -e "  - WS路径: ${green}/$WS_PATH${reset}"
         fi
     else
@@ -70,7 +74,9 @@ Config() {
         echo -e "请选择协议："
         echo -e "${green}1${reset}、vmess+tcp"
         echo -e "${green}2${reset}、vmess+ws"
-        read -rp "输入数字选择协议 (1-2 默认[1]): " confirm
+        echo -e "${green}3${reset}、vmess+tcp+tls"
+        echo -e "${green}4${reset}、vmess+ws+tls"
+        read -rp "输入数字选择协议 (1-4 默认[1]): " confirm
         confirm=${confirm:-1}  # 默认为 1
         # 端口处理
         read -p "请输入监听端口 (留空以随机生成端口): " PORT
@@ -85,8 +91,8 @@ Config() {
         if [[ -z "$UUID" ]]; then
             UUID=$(cat /proc/sys/kernel/random/uuid)
         fi
-        # WebSocket 路径处理 (仅限选择2时)
-        if [[ "$confirm" == "2" ]]; then
+        # WebSocket 路径处理 (仅限选择2或4时)
+        if [[ "$confirm" == "2" || "$confirm" == "4" ]]; then
             read -p "请输入 WebSocket 路径 (留空以生成随机路径): " WS_PATH
             if [[ -z "$WS_PATH" ]]; then
                 WS_PATH=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
@@ -98,11 +104,13 @@ Config() {
         case $confirm in
             1) echo -e "  - 协议: ${green}vmess+tcp${reset}" ;;
             2) echo -e "  - 协议: ${green}vmess+ws${reset}" ;;
+            3) echo -e "  - 协议: ${green}vmess+tcp+tls${reset}" ;;
+            4) echo -e "  - 协议: ${green}vmess+ws+tls${reset}" ;;
             *) echo -e "${red}无效选项${reset}" && exit 1 ;;
         esac
         echo -e "  - 端口: ${green}$PORT${reset}"
         echo -e "  - UUID: ${green}$UUID${reset}"
-        if [[ "$confirm" == "2" ]]; then
+        if [[ "$confirm" == "2" || "$confirm" == "4" ]]; then
             echo -e "  - WS路径: ${green}/$WS_PATH${reset}"
         fi
     fi
@@ -128,6 +136,40 @@ Config() {
                 .inbounds[0].streamSettings.network = "ws" |
                 .inbounds[0].streamSettings.wsSettings.path = $ws_path |
                 del(.inbounds[0].streamSettings.tlsSettings) |
+                del(.inbounds[0].streamSettings.wsSettings.headers)
+            ')
+            ;;
+        3)  # vmess + tcp + tls
+            config=$(echo "$config" | jq --arg port "$PORT" --arg uuid "$UUID" '
+                .inbounds[0].port = ($port | tonumber) |
+                .inbounds[0].settings.clients[0].id = $uuid |
+                .inbounds[0].streamSettings.network = "tcp" |
+                .inbounds[0].streamSettings.security = "tls" |
+                .inbounds[0].streamSettings.tlsSettings = {
+                    "certificates": [
+                        {
+                            "certificateFile": "/root/v2ray/ssl/server.crt",
+                            "keyFile": "/root/v2ray/ssl/server.key"
+                        }
+                    ]
+                }
+            ')
+            ;;
+        4)  # vmess + ws + tls
+            config=$(echo "$config" | jq --arg port "$PORT" --arg uuid "$UUID" --arg ws_path "/$WS_PATH" '
+                .inbounds[0].port = ($port | tonumber) |
+                .inbounds[0].settings.clients[0].id = $uuid |
+                .inbounds[0].streamSettings.network = "ws" |
+                .inbounds[0].streamSettings.wsSettings.path = $ws_path |
+                .inbounds[0].streamSettings.security = "tls" |
+                .inbounds[0].streamSettings.tlsSettings = {
+                    "certificates": [
+                        {
+                            "certificateFile": "/root/v2ray/ssl/server.crt",
+                            "keyFile": "/root/v2ray/ssl/server.key"
+                        }
+                    ]
+                } |
                 del(.inbounds[0].streamSettings.wsSettings.headers)
             ')
             ;;
