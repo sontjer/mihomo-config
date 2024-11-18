@@ -148,8 +148,8 @@ Config() {
                 .inbounds[0].streamSettings.tlsSettings = {
                     "certificates": [
                         {
-                            "certificateFile": "/root/v2ray/ssl/server.crt",
-                            "keyFile": "/root/v2ray/ssl/server.key"
+                            "certificateFile": "/root/ssl/server.crt",
+                            "keyFile": "/root/ssl/server.key"
                         }
                     ]
                 }
@@ -165,8 +165,8 @@ Config() {
                 .inbounds[0].streamSettings.tlsSettings = {
                     "certificates": [
                         {
-                            "certificateFile": "/root/v2ray/ssl/server.crt",
-                            "keyFile": "/root/v2ray/ssl/server.key"
+                            "certificateFile": "/root/ssl/server.crt",
+                            "keyFile": "/root/ssl/server.key"
                         }
                     ]
                 } |

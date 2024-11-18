@@ -8,7 +8,8 @@
         "your_awesome_password"
     ],
     "ssl": {
-        "cert": "server.crt",
-        "key": "server.key"
+        "cert": "/root/ssl/server.crt",
+        "key": "/root/ssl/server.key",
+        "sni": "your_sni"
     }
 }
