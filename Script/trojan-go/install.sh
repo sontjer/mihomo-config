@@ -55,7 +55,7 @@ install_update() {
 }
 
 download_trojan-go() {
-    local version_file="/root/trojan-go/version.txt"
+    local version_file="/root/trojan/version.txt"
     local filename
     get_version
     case "$arch" in
@@ -97,7 +97,7 @@ download_config() {
 }
 
 install_trojan-go() {
-    local folders="/root/trojan-go"
+    local folders="/root/trojan"
     [ -d "$folders" ] && rm -rf "$folders"
     mkdir -p "$folders" && cd "$folders" 
     get_schema

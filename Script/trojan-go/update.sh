@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#!name = v2ray 一键更新脚本
+#!name = trojan-go 一键更新脚本
 #!desc = 更新
 #!date = 2024-11-03 22:30
 #!author = ChatGPT
@@ -30,23 +30,23 @@ get_url() {
 start_main() {
     echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" 
     read temp
-    exec /usr/bin/v2ray
+    exec /usr/bin/trojan-go
 }
 
 get_version() {
-    local version_file="/root/v2ray/version.txt"
+    local version_file="/root/trojan/version.txt"
     if [ -f "$version_file" ]; then
         cat "$version_file"
     else
-        echo -e "${red}请先安装 v2ray${reset}"
+        echo -e "${red}请先安装 trojan-go${reset}"
         start_main
     fi
 }
 
 get_install() {
-    local file="/root/v2ray/v2ray"
+    local file="/root/trojan/trojan-go"
     if [ ! -f "$file" ]; then
-        echo -e "${red}请先安装 v2ray${reset}"
+        echo -e "${red}请先安装 trojan-go${reset}"
         start_main
     fi
 }
@@ -64,35 +64,35 @@ get_schema(){
 }
 
 get_version() {
-    local version_url="https://api.github.com/repos/v2fly/v2ray-core/releases/latest"
+    local version_url="https://api.github.com/repos/v2fly/trojan-go-core/releases/latest"
     version=$(curl -sSL "$version_url" | jq -r '.tag_name' | sed 's/v//') || {
-        echo -e "${red}获取 v2ray 远程版本失败${reset}";
+        echo -e "${red}获取 trojan-go 远程版本失败${reset}";
         exit 1;
     }
 }
 
-download_v2ray() {
-    local version_file="/root/v2ray/version.txt"
+download_trojan-go() {
+    local version_file="/root/trojan/version.txt"
     local filename
     get_version
     case "$arch" in
         'amd64' | '386' | 'armv8' | 'armv7' | 's390x')
-            filename="v2ray-linux-${arch}.zip";;
+            filename="trojan-go-linux-${arch}.zip";;
         *) 
             echo -e "${red}未知的架构: ${arch}${reset}"
             exit 1;;
     esac
-    local download_url=$(get_url "https://github.com/v2fly/v2ray-core/releases/download/v${version}/${filename}")
-    wget -t 3 -T 30 "${download_url}" -O "${filename}" || { echo -e "${red}v2ray 下载失败，可能是网络问题，建议重新运行本脚本重试下载${reset}"; exit 1; }
-    unzip "$filename" && rm "$filename" || { echo -e "${red}v2ray 解压失败${reset}"; exit 1; }
-    chmod +x v2ray
+    local download_url=$(get_url "https://github.com/v2fly/trojan-go-core/releases/download/v${version}/${filename}")
+    wget -t 3 -T 30 "${download_url}" -O "${filename}" || { echo -e "${red}trojan-go 下载失败，可能是网络问题，建议重新运行本脚本重试下载${reset}"; exit 1; }
+    unzip "$filename" && rm "$filename" || { echo -e "${red}trojan-go 解压失败${reset}"; exit 1; }
+    chmod +x trojan-go
     echo "$version" > "$version_file"
 }
 
-update_v2ray() {
-    local folders="/root/v2ray"
+update_trojan-go() {
+    local folders="/root/trojan"
     get_install
-    echo -e "${green}开始检查 v2ray 是否有更新${reset}"
+    echo -e "${green}开始检查 trojan-go 是否有更新${reset}"
     cd "$folders" || exit
     get_version
     current_version=$(get_version)
@@ -103,16 +103,16 @@ update_v2ray() {
         echo -e "${green}当前已是最新版本，无需更新${reset}"
         start_main
     fi
-    echo -e "${green}检查到 v2ray 已有新版本${reset}"
+    echo -e "${green}检查到 trojan-go 已有新版本${reset}"
     echo -e "当前版本：[ ${green}${current_version}${reset} ]"
     echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
     while true; do
         read -p "是否升级到最新版本？(y/n): " confirm
         case $confirm in
             [Yy]* )
-                download_v2ray
+                download_trojan-go
                 sleep 2s
-                systemctl restart v2ray
+                systemctl restart trojan-go
                 echo -e "${green}更新完成，当前版本已更新为：[ ${latest_version} ]${reset}"
                 start_main
                 ;;
@@ -127,4 +127,4 @@ update_v2ray() {
     done
 }
 
-update_v2ray
+update_trojan-go

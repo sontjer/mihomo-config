@@ -28,7 +28,7 @@ get_url() {
 }
 
 Config() {
-    local config_file="/root/trojan-go/config.json"
+    local config_file="/root/trojan/config.json"
     local config_url=$(get_url "https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Config/trojan-go.json")
     curl -s -o "$config_file" "$config_url"
     echo -e "${green}开始下载配置文件 ${reset}"

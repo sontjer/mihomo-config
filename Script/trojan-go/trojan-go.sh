@@ -33,7 +33,7 @@ start_main() {
 }
 
 check_install() {
-    local file="/root/trojan-go/trojan-go"
+    local file="/root/trojan/trojan-go"
     if [ ! -f "$file" ]; then
         echo -e "${red}请先安装 trojan-go${reset}"
         start_main
@@ -41,7 +41,7 @@ check_install() {
 }
 
 check_status() {
-    local file="/root/trojan-go/trojan-go"
+    local file="/root/trojan/trojan-go"
     if pgrep -f "$file" > /dev/null; then
         status="running"
     else
@@ -50,7 +50,7 @@ check_status() {
 }
 
 get_version() {
-    local version_file="/root/trojan-go/version.txt"
+    local version_file="/root/trojan/version.txt"
     if [ -f "$version_file" ]; then
         cat "$version_file"
     else
@@ -59,7 +59,7 @@ get_version() {
 }
 
 show_status() {
-    local file="/root/trojan-go/trojan-go"
+    local file="/root/trojan/trojan-go"
     check_status
     if [ ! -f "$file" ]; then
         status="${red}未安装${reset}"
@@ -133,7 +133,7 @@ stop_trojan-go() { manage_trojan-go stop; }
 restart_trojan-go() { manage_trojan-go restart; }
 
 uninstall_trojan-go() {
-    local folders="/root/trojan-go"
+    local folders="/root/trojan"
     local shell_file="/usr/bin/trojan-go"
     local system_file="/etc/systemd/system/trojan-go.service"
     check_install
@@ -226,7 +226,7 @@ download_config() {
 }
 
 download_trojan-go() {
-    local file="/root/trojan-go/trojan-go"
+    local file="/root/trojan/trojan-go"
     if [ -f "$file" ]; then
         echo -e "${red}trojan-go 已安装，请勿重复安装！${reset}"
         start_main
