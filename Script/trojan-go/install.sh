@@ -59,7 +59,7 @@ download_trojan-go() {
     local filename
     get_version
     case "$arch" in
-        '64' | '32' | 'arm64-v8a' | 'arm32-v7a' | 's390x') 
+        'amd64' | '386' | 'armv8' | 'armv7' | 's390x')
             filename="trojan-go-linux-${arch}.zip";;
         *) 
             echo -e "${red}未知的架构: ${arch}${reset}"
