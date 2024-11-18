@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#!name = v2ray 一键管理脚本
+#!name = trojan-go 一键管理脚本
 #!desc = 管理
 #!date = 2024-11-18 19:30
 #!author = ChatGPT
@@ -33,15 +33,15 @@ start_main() {
 }
 
 check_install() {
-    local file="/root/v2ray/v2ray"
+    local file="/root/trojan-go/trojan-go"
     if [ ! -f "$file" ]; then
-        echo -e "${red}请先安装 v2ray${reset}"
+        echo -e "${red}请先安装 trojan-go${reset}"
         start_main
     fi
 }
 
 check_status() {
-    local file="/root/v2ray/v2ray"
+    local file="/root/trojan-go/trojan-go"
     if pgrep -f "$file" > /dev/null; then
         status="running"
     else
@@ -50,16 +50,16 @@ check_status() {
 }
 
 get_version() {
-    local version_file="/root/v2ray/version.txt"
+    local version_file="/root/trojan-go/version.txt"
     if [ -f "$version_file" ]; then
         cat "$version_file"
     else
-        echo -e "${red}请先安装 v2ray${reset}"
+        echo -e "${red}请先安装 trojan-go${reset}"
     fi
 }
 
 show_status() {
-    local file="/root/v2ray/v2ray"
+    local file="/root/trojan-go/trojan-go"
     check_status
     if [ ! -f "$file" ]; then
         status="${red}未安装${reset}"
@@ -74,7 +74,7 @@ show_status() {
             status="${green}已安装${reset}"
             run_status="${red}未运行${reset}"
         fi
-        if systemctl is-enabled v2ray.service &>/dev/null; then
+        if systemctl is-enabled trojan-go.service &>/dev/null; then
             auto_start="${green}已设置${reset}"
         else
             auto_start="${red}未设置${reset}"
@@ -86,73 +86,73 @@ show_status() {
     echo -e "开机自启：${auto_start}"
 }
 
-manage_v2ray() {
+manage_trojan-go() {
     local action="$1"
     check_install
     case "$action" in
         start) 
             action_text="启动" 
-            if systemctl is-active --quiet v2ray; then
-                echo -e "${yellow}v2ray 已经在运行，无需重复操作${reset}"
+            if systemctl is-active --quiet trojan-go; then
+                echo -e "${yellow}trojan-go 已经在运行，无需重复操作${reset}"
                 start_main
             fi
             ;;
         stop)
             action_text="停止" 
-            if ! systemctl is-active --quiet v2ray; then
-                echo -e "${yellow}v2ray 已经停止，无需重复操作${reset}"
+            if ! systemctl is-active --quiet trojan-go; then
+                echo -e "${yellow}trojan-go 已经停止，无需重复操作${reset}"
                 start_main
                 return 0
             fi
             ;;
         restart) action_text="重启" ;;
     esac
-    echo -e "${green}v2ray 准备${action_text}中${reset}"
-    systemctl "$action" v2ray
+    echo -e "${green}trojan-go 准备${action_text}中${reset}"
+    systemctl "$action" trojan-go
     sleep 1s
-    echo -e "${green}v2ray ${action_text}命令已发出${reset}"
+    echo -e "${green}trojan-go ${action_text}命令已发出${reset}"
     sleep 3s
     if [ "$action" = "stop" ]; then
-        if systemctl is-active --quiet v2ray; then
-            echo -e "${red}v2ray ${action_text}失败${reset}"
+        if systemctl is-active --quiet trojan-go; then
+            echo -e "${red}trojan-go ${action_text}失败${reset}"
         else
-            echo -e "${green}v2ray ${action_text}成功${reset}"
+            echo -e "${green}trojan-go ${action_text}成功${reset}"
         fi
     else
-        if systemctl is-active --quiet v2ray; then
-            echo -e "${green}v2ray ${action_text}成功${reset}"
+        if systemctl is-active --quiet trojan-go; then
+            echo -e "${green}trojan-go ${action_text}成功${reset}"
         else
-            echo -e "${red}v2ray ${action_text}失败${reset}"
+            echo -e "${red}trojan-go ${action_text}失败${reset}"
         fi
     fi
     start_main
 }
 
-start_v2ray() { manage_v2ray start; }
-stop_v2ray() { manage_v2ray stop; }
-restart_v2ray() { manage_v2ray restart; }
+start_trojan-go() { manage_trojan-go start; }
+stop_trojan-go() { manage_trojan-go stop; }
+restart_trojan-go() { manage_trojan-go restart; }
 
-uninstall_v2ray() {
-    local folders="/root/v2ray"
-    local shell_file="/usr/bin/v2ray"
-    local system_file="/etc/systemd/system/v2ray.service"
+uninstall_trojan-go() {
+    local folders="/root/trojan-go"
+    local shell_file="/usr/bin/trojan-go"
+    local system_file="/etc/systemd/system/trojan-go.service"
     check_install
-    read -rp "确认卸载 v2ray 吗？(y/n): " confirm
+    read -rp "确认卸载 trojan-go 吗？(y/n): " confirm
     if [[ -z $confirm || $confirm =~ ^[Nn]$ ]]; then
         echo "卸载已取消。"
         start_main
     fi
-    echo -e "${green}v2ray 开始卸载${reset}"
+    echo -e "${green}trojan-go 开始卸载${reset}"
     sleep 1s
-    echo -e "${green}v2ray 卸载命令已发出${reset}"
-    systemctl stop v2ray.service 2>/dev/null || { echo -e "${red}停止 v2ray 服务失败${reset}"; exit 1; }
-    systemctl disable v2ray.service 2>/dev/null || { echo -e "${red}禁用 v2ray 服务失败${reset}"; exit 1; }
+    echo -e "${green}trojan-go 卸载命令已发出${reset}"
+    systemctl stop trojan-go.service 2>/dev/null || { echo -e "${red}停止 trojan-go 服务失败${reset}"; exit 1; }
+    systemctl disable trojan-go.service 2>/dev/null || { echo -e "${red}禁用 trojan-go 服务失败${reset}"; exit 1; }
     rm -f "$system_file" || { echo -e "${red}删除服务文件失败${reset}"; exit 1; }
     rm -rf "$folders" || { echo -e "${red}删除相关文件夹失败${reset}"; exit 1; }
     systemctl daemon-reload || { echo -e "${red}重新加载 systemd 配置失败${reset}"; exit 1; }
     sleep 3s
     if [ ! -f "$system_file" ] && [ ! -d "$folders" ]; then
-        echo -e "${green}v2ray 卸载完成${reset}"
+        echo -e "${green}trojan-go 卸载完成${reset}"
         echo ""
         echo -e "卸载成功，如果你想删除此脚本，则退出脚本后，输入 ${green}rm $shell_file -f${reset} 进行删除"
         echo ""
@@ -163,9 +163,9 @@ uninstall_v2ray() {
 }
 
 update_shell() {
-    local shell_file="/usr/bin/v2ray"
+    local shell_file="/usr/bin/trojan-go"
     echo -e "${green}开始检查管理脚本是否有更新${reset}"
-    sh_ver_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/v2ray/v2ray.sh"
+    sh_ver_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/trojan-go/trojan-go.sh"
     sh_new_ver=$(wget --no-check-certificate -qO- "$sh_ver_url" | grep 'sh_ver="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1)
     if [ "$sh_ver" == "$sh_new_ver" ]; then
         echo -e "当前版本：[ ${green}${sh_ver}${reset} ]"
@@ -193,7 +193,7 @@ update_shell() {
                 echo -e "更新完成，当前版本已更新为 ${green}[ v${sh_new_ver} ]${reset}"
                 echo -e "5 秒后执行新脚本"
                 sleep 5s
-                /usr/bin/v2ray
+                /usr/bin/trojan-go
                 break
                 ;;
             [Nn]* )
@@ -208,30 +208,30 @@ update_shell() {
     start_main
 }
 
-update_v2ray() {
+update_trojan-go() {
     check_install
-    local update_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/v2ray/update.sh"
+    local update_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/trojan-go/update.sh"
     update_url=$(get_url "$update_url")
     bash <(curl -Ls "$update_url")
-    systemctl restart v2ray
+    systemctl restart trojan-go
     start_main
 }
 
 download_config() {
     check_install
-    local config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/v2ray/config.sh"
+    local config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/trojan-go/config.sh"
     config_url=$(get_url "$config_url")
     bash <(curl -Ls "$config_url")
     start_main
 }
 
-download_v2ray() {
-    local file="/root/v2ray/v2ray"
+download_trojan-go() {
+    local file="/root/trojan-go/trojan-go"
     if [ -f "$file" ]; then
-        echo -e "${red}v2ray 已安装，请勿重复安装！${reset}"
+        echo -e "${red}trojan-go 已安装，请勿重复安装！${reset}"
         start_main
     fi
-    local install_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/v2ray/install.sh"
+    local install_url="https://raw.githubusercontent.com/Abcd789JK/Tools/main/Script/trojan-go/install.sh"
     install_url=$(get_url "$install_url")
     bash <(curl -Ls "$install_url")
 }
@@ -239,19 +239,19 @@ download_v2ray() {
 main() {
     clear
     echo "================================="
-    echo -e "${green}欢迎使用 v2ray 一键脚本 Beta 版${reset}"
+    echo -e "${green}欢迎使用 trojan-go 一键脚本 Beta 版${reset}"
     echo -e "${green}作者：${yellow} ChatGPT ${reset}"
     echo -e "${red}更换订阅不能保存以前添加的，需要重新添加以前订阅${reset}"
     echo "================================="
     echo -e "${green} 0${reset}. 更新脚本"
     echo "---------------------------------"
-    echo -e "${green} 1${reset}. 安装 v2ray"
-    echo -e "${green} 2${reset}. 更新 v2ray"
-    echo -e "${green} 3${reset}. 卸载 v2ray"
+    echo -e "${green} 1${reset}. 安装 trojan-go"
+    echo -e "${green} 2${reset}. 更新 trojan-go"
+    echo -e "${green} 3${reset}. 卸载 trojan-go"
     echo "---------------------------------"
-    echo -e "${green} 4${reset}. 启动 v2ray"
-    echo -e "${green} 5${reset}. 停止 v2ray"
-    echo -e "${green} 6${reset}. 重启 v2ray"
+    echo -e "${green} 4${reset}. 启动 trojan-go"
+    echo -e "${green} 5${reset}. 停止 trojan-go"
+    echo -e "${green} 6${reset}. 重启 trojan-go"
     echo "---------------------------------"
     echo -e "${green}10${reset}. 退出脚本"
     echo "================================="
@@ -259,12 +259,12 @@ main() {
     echo "================================="
     read -p "请输入选项[0-10]：" num
     case "$num" in
-        1) download_v2ray ;;
-        2) update_v2ray ;;
-        3) uninstall_v2ray ;;
-        4) start_v2ray ;;
-        5) stop_v2ray ;;
-        6) restart_v2ray ;;
+        1) download_trojan-go ;;
+        2) update_trojan-go ;;
+        3) uninstall_trojan-go ;;
+        4) start_trojan-go ;;
+        5) stop_trojan-go ;;
+        6) restart_trojan-go ;;
         10) exit 0 ;;
         0) update_shell ;;
         *) echo -e "${Red}无效选项，请重新选择${reset}" 
