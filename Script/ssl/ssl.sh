@@ -73,8 +73,6 @@ install_ssl_cert() {
 
 # === 安装和配置流程 ===
 install_acme
-install_socat
-create_symlink
 
 # 设置 Cloudflare API token 和账号 ID
 echo "正在设置 Cloudflare 环境变量..."
