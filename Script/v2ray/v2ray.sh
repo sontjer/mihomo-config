@@ -14,7 +14,7 @@ blue="\033[34m"  ## 蓝色
 cyan="\033[36m"  ## 青色
 reset="\033[0m"  ## 重置
 
-sh_ver="0.0.1"
+sh_ver="0.0.2"
 
 use_cdn=false
 
@@ -30,6 +30,15 @@ get_url() {
 start_main() {
     echo && echo -n -e "${red}* 按回车返回主菜单 *${reset}" && read temp
     main
+}
+
+get_version() {
+    local version_file="/root/v2ray/version.txt"
+    if [ -f "$version_file" ]; then
+        cat "$version_file"
+    else
+        echo -e "${red}请先安装 v2ray${reset}"
+    fi
 }
 
 check_install() {
@@ -49,18 +58,8 @@ check_status() {
     fi
 }
 
-get_version() {
-    local version_file="/root/v2ray/version.txt"
-    if [ -f "$version_file" ]; then
-        cat "$version_file"
-    else
-        echo -e "${red}请先安装 v2ray${reset}"
-    fi
-}
-
 show_status() {
     local file="/root/v2ray/v2ray"
-    check_status
     if [ ! -f "$file" ]; then
         status="${red}未安装${reset}"
         run_status="${red}未运行${reset}"
@@ -80,10 +79,12 @@ show_status() {
             auto_start="${red}未设置${reset}"
         fi
     fi
-    echo -e "脚本版本：${green}${sh_ver}${reset}"
+    software_version=$(get_version 2>/dev/null || echo "${red}未知${reset}")
     echo -e "安装状态：${status}"
     echo -e "运行状态：${run_status}"
     echo -e "开机自启：${auto_start}"
+    echo -e "脚本版本：${green}${sh_ver}${reset}"
+    echo -e "软件版本：${green}${software_version}${reset}"
 }
 
 manage_v2ray() {
@@ -240,8 +241,7 @@ main() {
     clear
     echo "================================="
     echo -e "${green}欢迎使用 v2ray 一键脚本 Beta 版${reset}"
-    echo -e "${green}作者：${yellow} ChatGPT ${reset}"
-    echo -e "${red}更换订阅不能保存以前添加的，需要重新添加以前订阅${reset}"
+    echo -e "${green}作者：${yellow}ChatGPT JK789${reset}"
     echo "================================="
     echo -e "${green} 0${reset}. 更新脚本"
     echo "---------------------------------"

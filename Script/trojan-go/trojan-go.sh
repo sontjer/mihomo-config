@@ -32,6 +32,15 @@ start_main() {
     main
 }
 
+get_version() {
+    local version_file="/root/trojan/version.txt"
+    if [ -f "$version_file" ]; then
+        cat "$version_file"
+    else
+        echo -e "${red}请先安装 trojan-go${reset}"
+    fi
+}
+
 check_install() {
     local file="/root/trojan/trojan-go"
     if [ ! -f "$file" ]; then
@@ -49,18 +58,8 @@ check_status() {
     fi
 }
 
-get_version() {
-    local version_file="/root/trojan/version.txt"
-    if [ -f "$version_file" ]; then
-        cat "$version_file"
-    else
-        echo -e "${red}请先安装 trojan-go${reset}"
-    fi
-}
-
 show_status() {
     local file="/root/trojan/trojan-go"
-    check_status
     if [ ! -f "$file" ]; then
         status="${red}未安装${reset}"
         run_status="${red}未运行${reset}"
@@ -80,10 +79,12 @@ show_status() {
             auto_start="${red}未设置${reset}"
         fi
     fi
-    echo -e "脚本版本：${green}${sh_ver}${reset}"
+    software_version=$(get_version 2>/dev/null || echo "${red}未知${reset}")
     echo -e "安装状态：${status}"
     echo -e "运行状态：${run_status}"
     echo -e "开机自启：${auto_start}"
+    echo -e "脚本版本：${green}${sh_ver}${reset}"
+    echo -e "软件版本：${green}${software_version}${reset}"
 }
 
 manage_trojan-go() {
