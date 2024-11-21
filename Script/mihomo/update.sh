@@ -98,7 +98,7 @@ update_mihomo() {
         echo -e "${green}当前已是最新版本，无需更新${reset}"
         start_main
     fi
-    echo -e "${green}检查到 mihomo 已有新版本${reset}"
+    echo -e "${green}已检查到 mihomo 已有新版本${reset}"
     echo -e "当前版本：[ ${green}${current_version}${reset} ]"
     echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
     while true; do
