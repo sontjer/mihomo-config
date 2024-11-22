@@ -87,22 +87,25 @@ download_mihomo() {
 update_mihomo() {
     local folders="/root/mihomo"
     get_install
-    echo -e "${green}开始 mihomo 更新${reset}"
-    cd "$folders" || exit 0
-    get_version
+    echo -e "${green}开始检查 mihomo 是否有更新${reset}"
+    cd "$folders" || exit
+    download_version
     current_version=$(get_version)
     latest_version="$version"
     if [ "$current_version" == "$latest_version" ]; then
+        echo -e "当前版本：[ ${green}${current_version}${reset} ]"
+        echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
         echo -e "${green}当前已是最新版本，无需更新${reset}"
         start_main
     fi
+    echo -e "${green}已检查到 mihomo 已有新版本${reset}"
+    echo -e "当前版本：[ ${green}${current_version}${reset} ]"
+    echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
     while true; do
-        read -p "检查到有新版本，是否升级到最新版本？(y/n): " confirm
+        read -p "是否升级到最新版本？(y/n): " confirm
         case $confirm in
             [Yy]* )
-                echo -e "${green}正在下载最新版本${reset}"
                 download_mihomo
-                echo -e "${green}下载完成，正在安装并重启重启服务${reset}"
                 sleep 2s
                 systemctl restart mihomo
                 echo -e "${green}更新完成，当前版本已更新为：[ ${latest_version} ]${reset}"

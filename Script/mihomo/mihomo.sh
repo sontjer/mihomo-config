@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键管理脚本
 #!desc = 管理
-#!date = 2024-11-22 10:35
+#!date = 2024-11-22 11:35
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -41,13 +41,6 @@ get_version() {
     fi
 }
 
-get_new_version() {
-    local version_url
-    version_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt")
-    version=$(curl -sSL "$version_url") || { echo -e "${red}获取 mihomo 远程版本失败${reset}"; exit 1; }
-    echo "$version"
-}
-
 check_install() {
     local file="/root/mihomo/mihomo"
     if [ ! -f "$file" ]; then
@@ -75,7 +68,7 @@ show_status() {
         check_status
         if [ "$status" == "running" ]; then
             status="${green}已安装${reset}"
-            run_status="${green}运行中${reset}"
+            run_status="${green}已运行${reset}"
         else
             status="${green}已安装${reset}"
             run_status="${red}未运行${reset}"
@@ -86,19 +79,12 @@ show_status() {
             auto_start="${red}未设置${reset}"
         fi
     fi
-    software_version=$(get_version 2>/dev/null || echo "${red}未知${reset}")
-    software_new_ver=$(get_new_version 2>/dev/null || echo "${red}未知${reset}")
-    if [ "$software_version" == "$software_new_ver" ]; then
-        software_new_ver_color="${green}${software_new_ver}${reset}"
-    else
-        software_new_ver_color="${red}${software_new_ver}${reset}"
-    fi
+    mihomo_version=$(get_version 2>/dev/null || echo "${red}未知${reset}")
     echo -e "安装状态：${status}"
     echo -e "运行状态：${run_status}"
     echo -e "开机自启：${auto_start}"
     echo -e "脚本版本：${green}${sh_ver}${reset}"
-    echo -e "当前版本：${green}${software_version}${reset}"
-    echo -e "最新版本：${software_new_ver_color}"
+    echo -e "软件版本：${green}${mihomo_version}${reset}"
 }
 
 manage_mihomo() {
