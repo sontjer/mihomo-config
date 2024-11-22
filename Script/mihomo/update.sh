@@ -97,7 +97,7 @@ update_mihomo() {
         start_main
     fi
     while true; do
-        read -p "是否升级到最新版本？(y/n): " confirm
+        read -p "检查到有新版本，是否升级到最新版本？(y/n): " confirm
         case $confirm in
             [Yy]* )
                 echo -e "${green}正在下载最新版本${reset}"
