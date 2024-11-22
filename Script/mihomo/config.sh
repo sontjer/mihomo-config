@@ -2,7 +2,7 @@
 
 #!name = mihomo 配置文件脚本
 #!desc = 配置文件
-#!date = 2024-11-03 22:30
+#!date = 2024-11-22 10:30
 #!author = ChatGPT
 
 set -e -o pipefail

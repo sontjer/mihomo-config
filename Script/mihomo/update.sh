@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键更新脚本
 #!desc = 更新
-#!date = 2024-11-03 22:30
+#!date = 2024-11-22 10:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -63,7 +63,7 @@ get_schema() {
     esac
 }
 
-download_version() {
+get_version() {
     local version_url
     version_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt")
     version=$(curl -sSL "$version_url") || { echo -e "${red}获取 mihomo 远程版本失败${reset}"; exit 1; }
@@ -73,7 +73,7 @@ download_mihomo() {
     local version_file="/root/mihomo/version.txt"
     local filename
     get_schema
-    download_version
+    get_version
     [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-go120-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
@@ -87,25 +87,22 @@ download_mihomo() {
 update_mihomo() {
     local folders="/root/mihomo"
     get_install
-    echo -e "${green}开始检查 mihomo 是否有更新${reset}"
-    cd "$folders" || exit
-    download_version
+    echo -e "${green}开始 mihomo 更新${reset}"
+    cd "$folders" || exit 0
+    get_version
     current_version=$(get_version)
     latest_version="$version"
     if [ "$current_version" == "$latest_version" ]; then
-        echo -e "当前版本：[ ${green}${current_version}${reset} ]"
-        echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
         echo -e "${green}当前已是最新版本，无需更新${reset}"
         start_main
     fi
-    echo -e "${green}已检查到 mihomo 已有新版本${reset}"
-    echo -e "当前版本：[ ${green}${current_version}${reset} ]"
-    echo -e "最新版本：[ ${green}${latest_version}${reset} ]"
     while true; do
         read -p "是否升级到最新版本？(y/n): " confirm
         case $confirm in
             [Yy]* )
+                echo -e "${green}正在下载最新版本${reset}"
                 download_mihomo
+                echo -e "${green}下载完成，正在安装并重启重启服务${reset}"
                 sleep 2s
                 systemctl restart mihomo
                 echo -e "${green}更新完成，当前版本已更新为：[ ${latest_version} ]${reset}"

@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键安装脚本
 #!desc = 安装
-#!date = 2024-11-03 22:30
+#!date = 2024-11-22 10:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -59,7 +59,7 @@ get_schema() {
     esac
 }
 
-download_version() {
+get_version() {
     local version_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt")
     version=$(curl -sSL "$version_url") || { echo -e "${red}获取 mihomo 远程版本失败${reset}"; exit 1; }
 }
@@ -67,7 +67,7 @@ download_version() {
 download_mihomo() {
     local version_file="/root/mihomo/version.txt"
     local filename
-    download_version
+    get_version
     [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-go120-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
@@ -114,7 +114,7 @@ install_mihomo() {
     mkdir -p "$folders" && cd "$folders" 
     get_schema
     echo -e "当前系统架构：[ ${green}${arch_raw}${reset} ]" 
-    download_version
+    get_version
     echo -e "当前软件版本：[ ${green}${version}${reset} ]"
     download_mihomo
     download_service
