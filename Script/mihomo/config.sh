@@ -2,7 +2,7 @@
 
 #!name = mihomo 配置文件脚本
 #!desc = 配置文件
-#!date = 2024-11-22 10:35
+#!date = 2024-11-22 11:35
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -24,7 +24,18 @@ fi
 
 get_url() {
     local url=$1
-    [ "$use_cdn" = true ] && echo "https://gh-proxy.com/$url" || echo "$url"
+    if [ "$use_cdn" = true ]; then
+        if curl --silent --head --fail --max-time 3 "https://gh-proxy.com/$url" > /dev/null; then
+            echo "https://gh-proxy.com/$url"
+            return
+        fi
+        if curl --silent --head --fail --max-time 3 "https://ghp.ci/$url" > /dev/null; then
+            echo "https://ghp.ci/$url"
+            return
+        fi
+    fi
+    echo "连接失败，可能是网络问题，请检查网络并稍后重试" >&2
+    exit 1
 }
 
 get_local_ip() {
