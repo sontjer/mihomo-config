@@ -25,16 +25,21 @@ fi
 get_url() {
     local url=$1
     if [ "$use_cdn" = true ]; then
-        if curl --silent --head --fail --max-time 3 "https://gh-proxy.com/$url" > /dev/null; then
-            echo "https://gh-proxy.com/$url"
-            return
-        fi
-        if curl --silent --head --fail --max-time 3 "https://ghp.ci/$url" > /dev/null; then
-            echo "https://ghp.ci/$url"
+        for proxy in "https://gh-proxy.com" "https://ghp.ci"; do
+            if curl --silent --head --fail --max-time 3 "$proxy/$url" > /dev/null; then
+                echo "$proxy/$url"
+                return
+            fi
+        done
+        echo "代理站点不可用，请稍后重试。" >&2
+        exit 1
+    else
+        if curl --silent --head --fail --max-time 3 "$url" > /dev/null; then
+            echo "$url"
             return
         fi
     fi
-    echo "连接失败，可能是网络问题，请检查网络并稍后重试" >&2
+    echo "连接失败，可能是网络问题，请检查网络并稍后重试。" >&2
     exit 1
 }
 
