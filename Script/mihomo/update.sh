@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键更新脚本
 #!desc = 更新
-#!date = 2024-11-22 10:35
+#!date = 2024-11-22 11:35
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -74,7 +74,7 @@ get_schema() {
     esac
 }
 
-get_version() {
+download_version() {
     local version_url
     version_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/version.txt")
     version=$(curl -sSL "$version_url") || { echo -e "${red}获取 mihomo 远程版本失败${reset}"; exit 1; }
