@@ -89,7 +89,7 @@ download_mihomo() {
     local version_file="/root/mihomo/version.txt"
     local filename
     get_schema
-    get_version
+    download_version
     [[ "$arch" == 'amd64' ]] && filename="mihomo-linux-${arch}-compatible-go120-${version}.gz" ||
     filename="mihomo-linux-${arch}-${version}.gz"
     local download_url=$(get_url "https://github.com/MetaCubeX/mihomo/releases/download/Prerelease-Alpha/${filename}")
