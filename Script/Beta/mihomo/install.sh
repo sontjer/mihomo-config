@@ -2,7 +2,7 @@
 
 #!name = mihomo 一键安装脚本
 #!desc = 安装
-#!date = 2024-11-03 22:30
+#!date = 2024-11-26 17:30
 #!author = ChatGPT
 
 set -e -o pipefail
@@ -24,7 +24,23 @@ fi
 
 get_url() {
     local url=$1
-    [ "$use_cdn" = true ] && echo "https://gh-proxy.com/$url" || echo "$url"
+    if [ "$use_cdn" = true ]; then
+        for proxy in "https://gh-proxy.com" "https://ghp.ci"; do
+            if curl --silent --head --fail --max-time 3 "$proxy/$url" > /dev/null; then
+                echo "$proxy/$url"
+                return
+            fi
+        done
+        echo "代理站点不可用，请稍后重试" >&2
+        exit 1
+    else
+        if curl --silent --head --fail --max-time 3 "$url" > /dev/null; then
+            echo "$url"
+            return
+        fi
+    fi
+    echo "连接失败，可能是网络问题，请检查网络并稍后重试" >&2
+    exit 1
 }
 
 install_update() {
@@ -45,6 +61,12 @@ check_ip_forward() {
         echo "net.ipv6.conf.all.forwarding=1" | tee -a "$sysctl_file" > /dev/null
     fi
     sysctl -p > /dev/null
+}
+
+get_local_ip() {
+    local iface=$(ip route | awk '/default/ {print $5}')
+    ipv4=$(ip addr show "$iface" | awk '/inet / {print $2}' | cut -d/ -f1)
+    ipv6=$(ip addr show "$iface" | awk '/inet6 / {print $2}' | cut -d/ -f1)
 }
 
 get_schema() {
@@ -103,9 +125,60 @@ download_shell() {
 }
 
 download_config() {
-    local config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Script/Beta/mihomo/config.sh"
+    local folders="/root/mihomo"
+    local config_file="${folders}/config.yaml"
+    echo -e "${cyan}-------------------------${reset}"
+    echo -e "${yellow}1. TUN 模式${reset}"
+    echo -e "${yellow}2. TProxy 模式${reset}"
+    echo -e "${cyan}-------------------------${reset}"
+    read -p "$(echo -e "请选择运行模式（${green}推荐使用 TUN 模式${reset}）请输入选择(1/2): ")" choice
+    choice=${choice:-1}
+    case "$choice" in
+        1) config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Config/mihomo.yaml" ;;
+        2) config_url="https://raw.githubusercontent.com/Abcd789JK/Tools/refs/heads/main/Config/mihomotp.yaml" ;;
+        *) echo -e "${red}无效选择，跳过配置文件下载。${reset}"; return ;;
+    esac
     config_url=$(get_url "$config_url")
-    bash <(curl -Ls "$config_url")
+    wget -q -O "${config_file}" "$config_url" || { echo -e "${red}配置文件下载失败${reset}"; exit 1; }
+    while true; do
+        read -p "请输入需要配置的机场数量（默认 1 个，最多 5 个）：" airport_count
+        airport_count=${airport_count:-1}
+        if [[ "$airport_count" =~ ^[1-5]$ ]]; then
+            break
+        else
+            echo -e "${red}无效的数量，请输入 1 到 5 之间的正整数${reset}"
+        fi
+    done
+    proxy_providers="proxy-providers:"
+    for ((i=1; i<=airport_count; i++)); do
+        read -p "请输入第 $i 个机场的订阅连接：" airport_url
+        read -p "请输入第 $i 个机场的名称：" airport_name
+        proxy_providers="$proxy_providers
+  provider_0$i:
+    url: \"$airport_url\"
+    type: http
+    interval: 86400
+    health-check: {enable: true, url: \"https://www.gstatic.com/generate_204\", interval: 300}
+    override:
+      additional-prefix: \"[$airport_name]\""
+    done
+    awk -v providers="$proxy_providers" '
+    /^# 机场配置/ {
+        print
+        print providers
+        next
+    }
+    { print }
+    ' "$config_file" > temp.yaml && mv temp.yaml "$config_file"
+    systemctl daemon-reload
+    systemctl start mihomo
+    get_local_ip
+    echo -e "${green}恭喜你，你的 mihomo 已经配置完成并保存到 ${yellow}${config_file}${reset}"
+    echo -e "下面是 mihomo 管理面板地址和进入管理菜单命令"
+    echo -e "${cyan}=========================${reset}"
+    echo -e "${green}http://$ipv4:9090/ui ${reset}"
+    echo -e "${green}mihomo          进入菜单 ${reset}"
+    echo -e "${cyan}=========================${reset}"
 }
 
 install_mihomo() {

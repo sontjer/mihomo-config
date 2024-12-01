@@ -31,7 +31,7 @@ get_url() {
                 return
             fi
         done
-        echo "代理站点不可用，请稍后重试。" >&2
+        echo "代理站点不可用，请稍后重试" >&2
         exit 1
     else
         if curl --silent --head --fail --max-time 3 "$url" > /dev/null; then
@@ -39,7 +39,7 @@ get_url() {
             return
         fi
     fi
-    echo "连接失败，可能是网络问题，请检查网络并稍后重试。" >&2
+    echo "连接失败，可能是网络问题，请检查网络并稍后重试" >&2
     exit 1
 }
 
