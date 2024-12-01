@@ -76,9 +76,9 @@
       { "tag": "Apple", "type": "selector", "outbounds": ["直连", "Proxy"] },
       { "tag": "Domest", "type": "selector", "outbounds": ["直连", "Proxy"] },
       { "tag": "香港", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "include", "keywords": ["香港"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
-      { "tag": "日本", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "exclude", "keywords": ["日本"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
+      { "tag": "日本", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "include", "keywords": ["日本"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
       { "tag": "新加坡", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "include", "keywords": ["新加坡"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
-      { "tag": "美国", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "exclude", "keywords": ["美国"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
+      { "tag": "美国", "type": "urltest", "outbounds": ["{all}"], "filter": [{ "action": "include", "keywords": ["美国"] }], "url": "http://www.gstatic.com/generate_204", "interval": "10m", "tolerance": 50 },
       { "tag": "GLOBAL", "type": "selector", "outbounds": ["{all}"]},
       { "tag": "直连", "type": "direct" },
       { "tag": "dns-out", "type": "dns" }
