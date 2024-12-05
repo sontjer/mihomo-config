@@ -97,59 +97,64 @@ proxy-groups:
 
   - name: 默认
     type: select
-    proxies: [自动选择,直连,香港,台湾,日本,新加坡,美国,其它地区,全部节点]
+    proxies: [自动选择,直连,香港,香港自动,台湾,台湾自动,日本,日本自动,新加坡,新加坡自动,美国,其它地区,全部节点]
 
   - name: Google
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: Telegram
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: Claude
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,台湾,台湾自动,日本,日本自动,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: Twitter
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: 哔哩哔哩
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: TikTok
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: YouTube
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: NETFLIX
     type: select
-    proxies: [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: Spotify
     type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies:  [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: Github
     type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies:  [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
   - name: 国内
     type: select
-    proxies:  [直连,默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择]
+    proxies:  [直连,默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择]
 
   - name: 其他
     type: select
-    proxies:  [默认,香港,台湾,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies:  [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
 
   #分隔,下面是地区分组
   - name: 香港
     type: select
+    include-all: true
+    filter: "(?i)港|hk|hongkong|hong kong"
+
+  - name: 香港自动
+    type: url-test
     include-all: true
     filter: "(?i)港|hk|hongkong|hong kong"
 
@@ -158,8 +163,18 @@ proxy-groups:
     include-all: true
     filter: "(?i)台|tw|taiwan"
 
+  - name: 台湾自动
+    type: select
+    include-all: true
+    filter: "(?i)台|tw|taiwan"
+
   - name: 日本
     type: select
+    include-all: true
+    filter: "(?i)日|jp|japan"
+
+  - name: 日本自动
+    type: url-test
     include-all: true
     filter: "(?i)日|jp|japan"
 
@@ -170,6 +185,11 @@ proxy-groups:
 
   - name: 新加坡
     type: select
+    include-all: true
+    filter: "(?i)(新加坡|sg|狮|singapore)"
+
+  - name: 新加坡自动
+    type: url-test
     include-all: true
     filter: "(?i)(新加坡|sg|狮|singapore)"
 
