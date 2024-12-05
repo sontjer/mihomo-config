@@ -14,7 +14,7 @@ proxy-providers:
       url: https://www.gstatic.com/generate_204
       interval: 300
     proxy: 默认
-    url: ""
+    url: "https://subapi.rss-node.com/sub?target=clash&interval=129600&filename=Hitun&url=https%3A%2F%2Frss-node.com%2Flink%2FtEXfJ5Uk4yp0w7N5%3Fmu%3D1"
 
 # 用于下载订阅时指定UA
 global-ua: clash.meta
@@ -209,6 +209,9 @@ proxy-groups:
 
 rules:
   - RULE-SET,private_ip,直连,no-resolve
+  - DOMAIN-KEYWORD,sontjer,国内
+  - DOMAIN-KEYWORD,mirai85,国内
+  - DOMAIN-KEYWORD,74373.cf,国内
   - RULE-SET,ads_domain,REJECT
   - RULE-SET,github_domain,Github
   - RULE-SET,twitter_domain,Twitter
@@ -217,7 +220,7 @@ rules:
   - RULE-SET,telegram_domain,Telegram
   - RULE-SET,claude_domain,Claude
   - RULE-SET,netflix_domain,NETFLIX
-  - RULE-SET,bilibili_domain,哔哩哔哩
+  - RULE-SET,bilibili_domain,国内
   - RULE-SET,tiktok_domain,TikTok
   - RULE-SET,spotify_domain,Spotify
   - RULE-SET,applemusic_domain,国内
