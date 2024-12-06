@@ -212,6 +212,7 @@ rules:
   - DOMAIN-KEYWORD,sontjer,国内
   - DOMAIN-KEYWORD,mirai85,国内
   - DOMAIN-KEYWORD,74373.cf,国内
+  - DOMAIN-KEYWORD,tophub,国内
   - RULE-SET,ads_domain,REJECT
   - RULE-SET,github_domain,Github
   - RULE-SET,twitter_domain,Twitter
