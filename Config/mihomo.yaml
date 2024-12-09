@@ -23,6 +23,7 @@ proxies:
   - name: "直连"
     type: direct
     udp: true
+  - {"name":"node1：271.88GB","type":"ss","server":"azabudai.org","port":10086,"cipher":"chacha20-ietf","password":"UxOiTH"}
 
 port: 7890
 socks-port: 7891
@@ -74,6 +75,7 @@ dns:
   ipv6: true
   respect-rules: true
   enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
   fake-ip-filter:
     - "*"
     - "+.lan"
@@ -111,6 +113,10 @@ proxy-groups:
     type: select
     proxies: [默认,台湾,台湾自动,日本,日本自动,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
 
+  - name: Steam
+    type: select
+    proxies: [默认,台湾,台湾自动,日本,日本自动,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
+
   - name: Twitter
     type: select
     proxies: [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,新加坡自动,美国,其它地区,全部节点,自动选择,直连]
@@ -145,7 +151,7 @@ proxy-groups:
 
   - name: 其他
     type: select
-    proxies:  [默认,香港,香港自动,台湾,台湾自动,日本,新加坡,美国,其它地区,全部节点,自动选择,直连]
+    proxies:  [默认,香港,香港自动,台湾,台湾自动,日本,日本自动,新加坡,美国,其它地区,全部节点,自动选择,直连]
 
   #分隔,下面是地区分组
   - name: 香港
@@ -214,6 +220,7 @@ rules:
   - DOMAIN-KEYWORD,74373.cf,国内
   - DOMAIN-KEYWORD,tophub,国内
   - RULE-SET,ads_domain,REJECT
+  - RULE-SET,steam_domain,Steam
   - RULE-SET,github_domain,Github
   - RULE-SET,twitter_domain,Twitter
   - RULE-SET,youtube_domain,YouTube
@@ -266,6 +273,9 @@ rule-providers:
   claude_domain:
     <<: *domain
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/anthropic.mrs"
+  steam_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.mrs"
   twitter_domain:
     <<: *domain
     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs"
