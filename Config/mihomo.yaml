@@ -23,7 +23,6 @@ proxies:
   - name: "直连"
     type: direct
     udp: true
-  - {"name":"node1：271.88GB","type":"ss","server":"azabudai.org","port":10086,"cipher":"chacha20-ietf","password":"UxOiTH"}
 
 port: 7890
 socks-port: 7891
