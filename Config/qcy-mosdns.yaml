@@ -161,8 +161,8 @@ proxy-groups:
   - {name: 🌐 全部节点, type: select, include-all: true}
 rules:
 #  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT  # 禁用QUIC
-  - RULE-SET,private_domain,DIRECT,no-resolve
   - RULE-SET,private_ip,DIRECT,no-resolve
+  - RULE-SET,private_domain,DIRECT,no-resolve
   - DOMAIN-KEYWORD,sontjer,🎯 全球直连
   - DOMAIN-KEYWORD,mirai85,🎯 全球直连
   - RULE-SET,apple_domain,🍎 Apple
