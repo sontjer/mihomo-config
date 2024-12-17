@@ -3,8 +3,6 @@ listeners:
     type: shadowsocks
     port: 28443
     listen: 0.0.0.0
-    # rule: sub-rule-name1 # 默认使用 rules,如果未找到 sub-rule 则直接使用 rules
-    # proxy: proxy # 如果不为空则直接将该入站流量交由指定proxy处理(当proxy不为空时,这里的proxy名称必须合法,否则会出错)
     password: ds27b800!
     cipher: aes-128-gcm
 
