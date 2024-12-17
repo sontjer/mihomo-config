@@ -81,7 +81,7 @@ iptables:
   enable: true
   inbound-interface: eth0
 
-# 代理模式
+# tun代理模式,切换为redir模式必须启用！！！
 #tun:
 #  enable: true
 #  stack: mixed
