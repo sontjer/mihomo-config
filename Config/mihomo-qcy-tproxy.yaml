@@ -7,9 +7,6 @@ listeners:
     # proxy: proxy # 如果不为空则直接将该入站流量交由指定proxy处理(当proxy不为空时,这里的proxy名称必须合法,否则会出错)
     password: ds27b800!
     cipher: aes-128-gcm
- # - name: socks5-in
- #   type: socks
- #   port: 48080
 
 proxies:
   - name: "直连"
@@ -17,7 +14,6 @@ proxies:
     udp: true
 
 # PUT NODES HERE
-
 
 # 全局配置
 port: 7890
