@@ -1,11 +1,3 @@
-listeners:
-  - name: ss-in
-    type: shadowsocks
-    port: 28443
-    listen: 0.0.0.0
-    password: ds27b800!
-    cipher: aes-128-gcm
-
 proxies:
   - name: "直连"
     type: direct
