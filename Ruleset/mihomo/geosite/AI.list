@@ -6,6 +6,7 @@ DOMAIN-KEYWORD,anthropic
 DOMAIN-KEYWORD,Claude
 DOMAIN-KEYWORD,perplexity
 DOMAIN-KEYWORD,notebooklm
+DOMAIN-KEYWORD,aistudio
 
 # 域名后缀匹配
 DOMAIN-SUFFIX,perplexity.ai
@@ -30,3 +31,4 @@ DOMAIN-SUFFIX,anthropic.com
 DOMAIN-SUFFIX,claude.ai
 DOMAIN-SUFFIX,notebooklm.google.com
 DOMAIN-SUFFIX,ai.google.dev
+DOMAIN-SUFFIX,aistudio.google.com
