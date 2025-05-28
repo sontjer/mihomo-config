@@ -174,8 +174,7 @@ proxy-groups:
   - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^((?!(直连)).)*$"}
   - {name: 🌐 全部节点, type: select, include-all: true}
 rules:
-  - AND,((NETWORK,UDP),(DST-PORT,443),(RULE-SET,cn_domain)),DIRECT  # 允许中国域名的UDP 443
-  - AND,((NETWORK,UDP),(DST-PORT,443)),REJECT  # 阻止非中国域名的UDP 443
+  - AND,((NETWORK,UDP),(DST-PORT,443),(NOT,((RULE-SET,domain)))),REJECT
   - RULE-SET,private_ip,DIRECT,no-resolve
   - RULE-SET,private_domain,DIRECT,no-resolve
   - DOMAIN-KEYWORD,adobe,REJECT
