@@ -27,15 +27,13 @@ dns:
       - 240.0.0.0/4
 
 proxies:
-  - name: home
-    type: ss
-    server: xhros.sontjer.top
-    port: 28443
-    password: tEm4na/W5Yxq/hIqe55amk5Y+ZS6I5tVBDACpDYUYpU=
-    cipher: 2022-blake3-aes-256-gcm
-    udp: true # 如果你需要UDP转发，可以设置为true
-
-
+ - name: home
+   type: ss
+   server: xhros.sontjer.top
+   port: 28443
+   password: tEm4na/W5Yxq/hIqe55amk5Y+ZS6I5tVBDACpDYUYpU=
+   cipher: 2022-blake3-aes-256-gcm
+   udp: true
 - name: CF_V8_usa.visa.com_443
   type: vless
   server: usa.visa.com
